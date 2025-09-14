@@ -1,10 +1,12 @@
-package com.GoWalk;
+package com.GoWalk.global;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 @SpringBootApplication
+@EnableJpaAuditing
 public class GoWalkApplication {
     public static void main(String[] args) {
         Dotenv dotenv = Dotenv.configure()
