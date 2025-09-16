@@ -1,4 +1,4 @@
-package com.GoWalk.global.dto;
+package com.GoWalk.global.data;
 
 import java.util.Map;
 
@@ -6,7 +6,7 @@ public record ApiResponse<T>(
     T data,
     ErrorResponse error
 ) {
-  public static <T> ApiResponse<T> success(T data) {
+  public static <T> ApiResponse<T> ok(T data) {
     return new ApiResponse<>(data, null);
   }
 
