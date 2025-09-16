@@ -1,4 +1,8 @@
 package com.GoWalk.domain.member.application.data.res;
 
-public class GetMyInfoRes {
-}
+import jakarta.validation.constraints.NotNull;
+
+public record GetMyInfoRes(
+    @NotNull String username,
+    @NotNull String message
+) {}

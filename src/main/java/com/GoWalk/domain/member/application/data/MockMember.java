@@ -1,4 +1,3 @@
 package com.GoWalk.domain.member.application.data;
 
-public class MockMember {
-}
+public record MockMember(String username, String message) {}
