@@ -1,7 +1,7 @@
 package com.GoWalk.global.exception;
 
-import com.GoWalk.global.common.ApiResponse;
-import com.GoWalk.global.dto.ErrorResponse;
+import com.GoWalk.global.data.ApiResponse;
+import com.GoWalk.global.data.ErrorResponse;
 import com.GoWalk.global.exception.exception.ApplicationException;
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
 import com.GoWalk.global.exception.status_code.CommonStatusCode;

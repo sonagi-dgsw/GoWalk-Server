@@ -1,4 +1,4 @@
-package com.GoWalk.global.dto;
+package com.GoWalk.global.data;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.time.LocalDateTime;
