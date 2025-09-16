@@ -1,4 +1,4 @@
-package com.GoWalk.global;
+package com.GoWalk;
 
 import io.github.cdimascio.dotenv.Dotenv;
 import org.springframework.boot.SpringApplication;
@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @SpringBootApplication
 @EnableJpaAuditing
-@RequestMapping("/api")
 public class GoWalkApplication {
     public static void main(String[] args) {
         Dotenv dotenv = Dotenv.configure()
