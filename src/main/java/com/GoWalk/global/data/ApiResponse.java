@@ -1,6 +1,5 @@
-package com.GoWalk.global.common;
+package com.GoWalk.global.dto;
 
-import com.GoWalk.global.dto.ErrorResponse;
 import java.util.Map;
 
 public record ApiResponse<T>(
