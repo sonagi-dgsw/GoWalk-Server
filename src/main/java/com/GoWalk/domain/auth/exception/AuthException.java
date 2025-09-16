@@ -1,5 +1,6 @@
-package com.GoWalk.global.exception.exception;
+package com.GoWalk.domain.auth.exception;
 
+import com.GoWalk.global.exception.exception.ApplicationException;
 import com.GoWalk.global.exception.status_code.StatusCode;
 
 public class AuthException extends ApplicationException {

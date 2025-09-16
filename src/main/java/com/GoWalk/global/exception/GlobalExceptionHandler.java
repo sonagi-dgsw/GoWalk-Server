@@ -3,7 +3,7 @@ package com.GoWalk.global.exception;
 import com.GoWalk.global.common.ApiResponse;
 import com.GoWalk.global.dto.ErrorResponse;
 import com.GoWalk.global.exception.exception.ApplicationException;
-import com.GoWalk.global.exception.status_code.AuthStatusCode;
+import com.GoWalk.domain.auth.exception.AuthStatusCode;
 import com.GoWalk.global.exception.status_code.CommonStatusCode;
 import com.GoWalk.global.exception.status_code.StatusCode;
 import jakarta.validation.ConstraintViolationException;
