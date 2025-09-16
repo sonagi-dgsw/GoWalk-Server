@@ -1,4 +1,6 @@
 package com.GoWalk.domain.walk.application.data.response;
 
-public class WalkRecommendationResponse {
-}
+public record WalkRecommendationResponse(
+        String mood,
+        String recommendedRoute
+) {}
