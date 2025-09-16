@@ -2,12 +2,12 @@ package com.GoWalk.domain.walk.application;
 
 import com.GoWalk.domain.walk.application.data.response.WalkRecommendationResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
+import org.springframework.stereotype.Component;
 
 import java.util.List;
 import java.util.Random;
 
-@Service
+@Component
 @RequiredArgsConstructor
 public class WalkRecommendationUseCase {
 
@@ -23,4 +23,3 @@ public class WalkRecommendationUseCase {
         return new WalkRecommendationResponse(mood, chosen);
     }
 }
-
