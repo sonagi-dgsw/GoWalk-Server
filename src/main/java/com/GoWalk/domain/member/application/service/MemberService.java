@@ -9,7 +9,6 @@ import com.GoWalk.domain.member.application.entity.Role;
 import com.GoWalk.domain.member.application.exception.MemberException;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
 import com.GoWalk.global.config.RedisConfig;
-import com.GoWalk.global.exception.status_code.StatusCode;
 import com.GoWalk.global.security.JwtProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +17,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;

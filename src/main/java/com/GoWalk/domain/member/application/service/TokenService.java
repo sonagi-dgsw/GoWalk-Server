@@ -33,11 +33,11 @@ public class TokenService {
 		String refreshToken = jwtProvider.generateRefreshToken(tokenReq);
 		redisConfig.redisTemplate().opsForValue().set("refreshToken:" + userId, refreshToken, 7, TimeUnit.DAYS);
 
-		Cookie accessCookie = new Cookie("refreshToken", refreshToken);
-		accessCookie.setPath("/");
-		accessCookie.setHttpOnly(true);
-		accessCookie.setMaxAge(60 * 60 * 24 * 7); // 7일
-		response.addCookie(accessCookie);
+		Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
+		refreshCookie.setPath("/");
+		refreshCookie.setHttpOnly(true);
+		refreshCookie.setMaxAge(60 * 60 * 24 * 7); // 7일
+		response.addCookie(refreshCookie);
 		return refreshToken;
 	}
 
