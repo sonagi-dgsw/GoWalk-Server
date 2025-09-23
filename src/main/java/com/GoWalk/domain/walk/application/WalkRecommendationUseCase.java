@@ -13,13 +13,25 @@ public class WalkRecommendationUseCase {
 
     private final Random random = new Random();
 
-    public WalkRecommendationRes recommend(Long memberId, String mood) {
-        List<String> dummy = List.of(
-                "한강공원루트 - 3km",
-                "대형이 이마 반지름 루트 - 4km"
+    public WalkRecommendationRes recommend(Long memberId, String mood, double minRating) {
+        List<WalkDummy> dummy = List.of(
+                new WalkDummy("한강공원루트 - 3km", 4.5),
+                new WalkDummy("대형이 이마 반지름 루트 - 4km", 3.2),
+                new WalkDummy("아파트 공원 루트 - 1km", 2.5),
+                new WalkDummy("BlaBlaBla 루트 - 2km", 4.8)
         );
 
-        String chosen = dummy.get(random.nextInt(dummy.size()));
-        return new WalkRecommendationRes(mood, chosen);
+        List<WalkDummy> filtered = dummy.stream()
+                .filter(w -> w.rating() >= minRating)
+                .toList();
+
+        if (filtered.isEmpty()) {
+            throw new IllegalArgumentException("조건에 맞는 산책로가 없습니다.");
+        }
+
+        WalkDummy chosen = filtered.get(random.nextInt(filtered.size()));
+        return new WalkRecommendationRes(mood, chosen.name(), chosen.rating());
     }
+
+    private record WalkDummy(String name, double rating) {}
 }

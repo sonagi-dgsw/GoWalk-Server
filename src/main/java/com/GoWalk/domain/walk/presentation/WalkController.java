@@ -16,9 +16,10 @@ public class WalkController {
 
     @GetMapping("/recommendation")
     public ApiResponse<WalkRecommendationRes> recommend(
-            @RequestParam(defaultValue = "CALM") String mood
+            @RequestParam(defaultValue = "CALM") String mood,
+            @RequestParam(defaultValue = "0") double minRating
     ) {
         // memberId 임시로 1L
-        return ApiResponse.ok(useCase.recommend(1L, mood));
+        return ApiResponse.ok(useCase.recommend(1L, mood, minRating));
     }
 }
