@@ -1,10 +1,12 @@
 package com.GoWalk.domain.walk.presentation;
 
 import com.GoWalk.domain.walk.application.WalkRecommendationUseCase;
+import com.GoWalk.domain.walk.application.WalkTimeUseCase;
+import com.GoWalk.domain.walk.application.data.request.WalkTimeReq;
 import com.GoWalk.domain.walk.application.data.response.WalkRecommendationRes;
+import com.GoWalk.domain.walk.application.data.response.WalkTimeRes;
 import com.GoWalk.global.data.ApiResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -12,14 +14,19 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class WalkController {
 
-    private final WalkRecommendationUseCase useCase;
+    private final WalkRecommendationUseCase walkRecommendationUseCase;
+    private final WalkTimeUseCase walkTimeUseCase;
 
     @GetMapping("/recommendation")
     public ApiResponse<WalkRecommendationRes> recommend(
             @RequestParam(defaultValue = "CALM") String mood,
             @RequestParam(defaultValue = "0") double minRating
     ) {
-        // memberId 임시로 1L
-        return ApiResponse.ok(useCase.recommend(1L, mood, minRating));
+        return ApiResponse.ok(walkRecommendationUseCase.recommend(1L, mood, minRating));
+    }
+
+    @PostMapping("/time")
+    public ApiResponse<WalkTimeRes> recommendTime(@RequestBody WalkTimeReq request) {
+        return ApiResponse.ok(walkTimeUseCase.recommendTime(request));
     }
 }
