@@ -9,13 +9,16 @@ import com.GoWalk.domain.member.application.entity.Role;
 import com.GoWalk.domain.member.application.exception.MemberException;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
 import com.GoWalk.global.config.RedisConfig;
+import com.GoWalk.global.exception.status_code.StatusCode;
 import com.GoWalk.global.security.JwtProvider;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +31,7 @@ public class MemberService {
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
 	private final RedisConfig redisConfig;
+	private final TokenService tokenService;
 
 	// 회원가입
 	public ResponseEntity<?> signUp(SignUpInReq request) {
@@ -57,7 +61,7 @@ public class MemberService {
 	}
 
 	// 로그인 + 토큰 발급
-	public ResponseEntity<?> signIn(SignUpInReq request) {
+	public ResponseEntity<?> signIn(SignUpInReq request, HttpServletResponse response) {
 		Member member = memberRepository.findByUsername(request.username()).orElseThrow(()
 				-> new IllegalArgumentException("사용자명 혹은 비밀번호가 잘못되었습니다."));
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
@@ -75,24 +79,21 @@ public class MemberService {
 				member.getRole()
 		);
 
-		String accessToken = jwtProvider.generateAccessToken(genAccessTokenReq);
-		String refreshToken = jwtProvider.generateRefreshToken(genRefreshTokenReq);
-
-		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();
-		valueOperations.set("RefreshToken:" + userId , refreshToken, 7, TimeUnit.DAYS);
-		valueOperations.set("AccessToken:" + userId, accessToken, 1, TimeUnit.HOURS);
+		// Redis 저장용
+		String accessToken = tokenService.generateAccessToken(genAccessTokenReq, userId, response);
+		String refreshToken = tokenService.generateRefreshToken(genRefreshTokenReq, userId, response);
 		return ResponseEntity.ok(Map.of("access_token", accessToken, "refresh_token", refreshToken));
 	}
 
 	// 토큰 재발급
-	public ResponseEntity<?> reGenToken(SignUpInReq request) {
+	public ResponseEntity<?> reGenToken(SignUpInReq request,  HttpServletResponse response) {
 		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();
 		String userId = request.username();
 		String refreshToken = request.refreshToken();
 
 		String savedRefreshToken = valueOperations.get("RefreshToken:" +  userId);
 		// 리프레시 토큰 살아있는지 검사
-		if (savedRefreshToken == null || !savedRefreshToken.equals(refreshToken)) {
+		if (!tokenService.validateRefreshToken(userId, refreshToken)) {
 			throw new MemberException(AuthStatusCode.INVALID_JWT);
 		}
 		else {
@@ -112,8 +113,7 @@ public class MemberService {
 	// 로그아웃
 	public void signOut(SignOutReq request) {
 		String userId = request.username();
-		redisConfig.redisTemplate().delete("AccessToken:" + userId);
-		redisConfig.redisTemplate().delete("RefreshToken:" + userId);
+		tokenService.deleteTokens(userId);
 	}
 
 	// 비밀번호 검증식
