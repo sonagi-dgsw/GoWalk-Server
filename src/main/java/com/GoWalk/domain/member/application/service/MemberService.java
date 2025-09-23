@@ -105,7 +105,7 @@ public class MemberService {
 					member.getRole()
 			);
 			String accessToken = jwtProvider.generateAccessToken(genAccessTokenReq);
-			valueOperations.set("AccessToken: " + userId, accessToken, 1, TimeUnit.HOURS);
+			valueOperations.set("AccessToken:" + userId, accessToken, 1, TimeUnit.HOURS);
 			return ResponseEntity.ok(Map.of("access_token", accessToken));
 		}
 	}
