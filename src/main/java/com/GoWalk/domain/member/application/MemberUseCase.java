@@ -17,6 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import com.GoWalk.domain.member.application.data.res.GetMyInfoRes;
+import com.GoWalk.domain.member.application.data.res.GetMyProfile;
+import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
