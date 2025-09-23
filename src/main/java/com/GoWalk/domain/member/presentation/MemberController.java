@@ -1,7 +1,7 @@
 package com.GoWalk.domain.member.presentation;
 
 import com.GoWalk.domain.member.application.MemberUseCase;
-import com.GoWalk.domain.member.application.data.MockMember;
+import com.GoWalk.domain.member.application.data.res.GetMyInfoRes;
 import com.GoWalk.domain.member.application.data.res.GetMyProfile;
 import com.GoWalk.global.data.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ public class MemberController {
   private final MemberUseCase memberUseCase;
 
   @GetMapping("/me")
-  public ApiResponse<MockMember> me() {
+  public ApiResponse<GetMyInfoRes> me() {
     return ApiResponse.ok(memberUseCase.getMyInfo());
   }
 
