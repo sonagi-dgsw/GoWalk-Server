@@ -4,6 +4,8 @@ import com.GoWalk.domain.member.application.data.MockMember;
 import com.GoWalk.domain.member.application.data.req.GenerateToken;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
+import com.GoWalk.domain.member.application.data.res.GetMyInfoRes;
+import com.GoWalk.domain.member.application.data.res.GetMyProfile;
 import com.GoWalk.domain.member.application.entity.Member;
 import com.GoWalk.domain.member.application.entity.Role;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
@@ -26,9 +28,13 @@ public class MemberUseCase {
 	private final PasswordEncoder passwordEncoder;
 	private final TokenUseCase tokenUseCase;
 
-	public MockMember getMyInfo() {
-		return new MockMember("gorani", "hello world");
-	}
+    public GetMyInfoRes getMyInfo() {
+        return GetMyInfoRes.of(new MockMember("gorani", "legend"));
+  }
+
+    public GetMyProfile getMyProfile() {
+        return GetMyProfile.of(new MockMember("고rani", "legend"));
+  }
 
 	// 회원가입
 	public ResponseEntity<?> signUp(SignUpInReq request) {
