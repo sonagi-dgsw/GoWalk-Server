@@ -31,9 +31,9 @@ public class WalkTimeUseCase {
         if (chosenTime.contains("오전")) {
             reason = "시원한 아침이라 산책하기 좋습니다.";
         } else if (chosenTime.contains("오후 5시")) {
-            reason = "적당한 온도로 산책하기 좋아요.";
+            reason = "적당한 온도로 산책하기 좋습니다.";
         } else if (chosenTime.contains("오후 8시")) {
-            reason = "저녁산책은 분위기가 좋아요";
+            reason = "저녁산책은 분위기가 좋습니다.";
         } else {
             reason = "만약 이 부분이 실행되었다면 개발자에게 커피를 사주십시오.";
         }

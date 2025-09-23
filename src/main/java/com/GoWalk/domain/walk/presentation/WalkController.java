@@ -6,6 +6,7 @@ import com.GoWalk.domain.walk.application.data.request.WalkTimeReq;
 import com.GoWalk.domain.walk.application.data.response.WalkRecommendationRes;
 import com.GoWalk.domain.walk.application.data.response.WalkTimeRes;
 import com.GoWalk.global.data.ApiResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +27,7 @@ public class WalkController {
     }
 
     @PostMapping("/time")
-    public ApiResponse<WalkTimeRes> recommendTime(@RequestBody WalkTimeReq request) {
+    public ApiResponse<WalkTimeRes> recommendTime(@Valid @RequestBody WalkTimeReq request) {
         return ApiResponse.ok(walkTimeUseCase.recommendTime(request));
     }
 }
