@@ -83,7 +83,7 @@ public class JwtProvider {
 				.build()
 				.parseSignedClaims(token)
 				.getPayload();
-		return claims.getSubject();
+		return claims.get("role").toString();
 	}
 
 	public String getTokenType(String token) {
