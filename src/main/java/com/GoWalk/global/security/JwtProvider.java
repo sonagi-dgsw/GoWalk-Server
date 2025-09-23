@@ -1,7 +1,6 @@
 package com.GoWalk.global.security;
 
-import com.GoWalk.domain.member.application.data.req.GenTokenReq;
-import com.GoWalk.domain.member.application.entity.Role;
+import com.GoWalk.domain.member.application.data.req.GenerateToken;
 import io.github.cdimascio.dotenv.Dotenv;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
@@ -35,7 +34,7 @@ public class JwtProvider {
 	}
 
 	// 리프레시 토큰
-	public String generateRefreshToken(GenTokenReq request) {
+	public String generateRefreshToken(GenerateToken request) {
 		Date now = new Date();
 		Date expiration = new Date(now.getTime() + refreshToken_Validity);
 
@@ -52,7 +51,7 @@ public class JwtProvider {
 	}
 
 	// 엑세스 토큰
-	public String generateAccessToken(GenTokenReq request) {
+	public String generateAccessToken(GenerateToken request) {
 		Date now = new Date();
 		Date expiration = new Date(now.getTime() + accessToken_Validity);
 
