@@ -34,7 +34,7 @@ public class GlobalExceptionHandler {
     );
     return ResponseEntity
         .status(statusCode.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(statusCode.getHttpStatus(), error));
   }
 
   @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -54,7 +54,7 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
         .status(CommonStatusCode.INVALID_ARGUMENT.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(CommonStatusCode.INVALID_ARGUMENT.getHttpStatus(), error));
   }
 
   @ExceptionHandler(ConstraintViolationException.class)
@@ -74,7 +74,7 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
         .status(CommonStatusCode.INVALID_ARGUMENT.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(CommonStatusCode.INVALID_ARGUMENT.getHttpStatus(), error));
   }
 
   @ExceptionHandler(MissingServletRequestParameterException.class)
@@ -86,7 +86,7 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
         .status(CommonStatusCode.INVALID_ARGUMENT.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(CommonStatusCode.INVALID_ARGUMENT.getHttpStatus(), error));
   }
 
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
@@ -98,7 +98,7 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
         .status(CommonStatusCode.INVALID_ARGUMENT.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(CommonStatusCode.INVALID_ARGUMENT.getHttpStatus(), error));
   }
 
   @ExceptionHandler(IllegalArgumentException.class)
@@ -110,7 +110,7 @@ public class GlobalExceptionHandler {
 
     return ResponseEntity
         .status(CommonStatusCode.INVALID_ARGUMENT.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(CommonStatusCode.INVALID_ARGUMENT.getHttpStatus(), error));
   }
 
   @ExceptionHandler(BadCredentialsException.class)
@@ -121,7 +121,7 @@ public class GlobalExceptionHandler {
     );
     return ResponseEntity
         .status(AuthStatusCode.INVALID_CREDENTIALS.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(AuthStatusCode.INVALID_CREDENTIALS.getHttpStatus(), error));
   }
 
   @ExceptionHandler(LockedException.class)
@@ -132,7 +132,7 @@ public class GlobalExceptionHandler {
     );
     return ResponseEntity
         .status(AuthStatusCode.ACCOUNT_LOCKED.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(AuthStatusCode.ACCOUNT_LOCKED.getHttpStatus(), error));
   }
 
   @ExceptionHandler(DisabledException.class)
@@ -143,7 +143,7 @@ public class GlobalExceptionHandler {
     );
     return ResponseEntity
         .status(AuthStatusCode.ACCOUNT_DISABLED.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(AuthStatusCode.ACCOUNT_DISABLED.getHttpStatus(), error));
   }
 
   @ExceptionHandler(NoResourceFoundException.class)
@@ -154,7 +154,7 @@ public class GlobalExceptionHandler {
     );
     return ResponseEntity
         .status(CommonStatusCode.ENDPOINT_NOT_FOUND.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(CommonStatusCode.ENDPOINT_NOT_FOUND.getHttpStatus(), error));
   }
 
   @ExceptionHandler(Exception.class)
@@ -166,6 +166,6 @@ public class GlobalExceptionHandler {
     );
     return ResponseEntity
         .status(CommonStatusCode.INTERNAL_SERVER_ERROR.getHttpStatus())
-        .body(ApiResponse.error(error));
+        .body(ApiResponse.error(CommonStatusCode.INTERNAL_SERVER_ERROR.getHttpStatus(), error));
   }
 }
