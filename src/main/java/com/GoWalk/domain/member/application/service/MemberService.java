@@ -49,7 +49,6 @@ public class MemberService {
 				.username(request.username())
 				.email(request.email())
 				.password(passwordEncoder.encode(rawPassword))
-				.email(request.email())
 				.breed(request.breed())
 				.breed_age(request.breed_age())
 				.role(Role.ROLE_USER)
