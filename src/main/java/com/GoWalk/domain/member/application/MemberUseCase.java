@@ -87,8 +87,6 @@ public class MemberUseCase {
 		return ResponseEntity.ok(Map.of("access_token", accessToken, "refresh_token", refreshToken));
 	}
 
-
-
 	// 로그아웃
 	public void signOut(SignOutReq request) {
 		String userId = request.username();
