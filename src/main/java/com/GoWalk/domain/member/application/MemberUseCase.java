@@ -1,7 +1,7 @@
 package com.GoWalk.domain.member.application;
 
 import com.GoWalk.domain.member.application.data.MockMember;
-import com.GoWalk.domain.member.application.data.req.GenerateToken;
+import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.data.res.GetMyInfoRes;
@@ -9,17 +9,12 @@ import com.GoWalk.domain.member.application.data.res.GetMyProfile;
 import com.GoWalk.domain.member.application.entity.Member;
 import com.GoWalk.domain.member.application.entity.Role;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
-import com.GoWalk.global.config.RedisConfig;
-import com.GoWalk.global.security.JwtProvider;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import com.GoWalk.domain.member.application.data.res.GetMyInfoRes;
-import com.GoWalk.domain.member.application.data.res.GetMyProfile;
-import org.springframework.stereotype.Component;
 
 import java.util.Map;
 
@@ -74,12 +69,12 @@ public class MemberUseCase {
 		}
 		String userId = request.username();
 
-		GenerateToken genAccessTokenReq = new GenerateToken(
+		GenerateTokenReq genAccessTokenReq = new GenerateTokenReq(
 				member.getUsername(),
 				member.getRole()
 		);
 
-		GenerateToken genRefreshTokenReq = new GenerateToken(
+		GenerateTokenReq genRefreshTokenReq = new GenerateTokenReq(
 				member.getUsername(),
 				member.getRole()
 		);

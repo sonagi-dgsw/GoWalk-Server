@@ -1,7 +1,7 @@
 package com.GoWalk.domain.member.application.service;
 
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
-import com.GoWalk.domain.member.application.data.req.GenTokenReq;
+import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.entity.Member;
@@ -9,7 +9,6 @@ import com.GoWalk.domain.member.application.entity.Role;
 import com.GoWalk.domain.member.application.exception.MemberException;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
 import com.GoWalk.global.config.RedisConfig;
-import com.GoWalk.global.exception.status_code.StatusCode;
 import com.GoWalk.global.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +16,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -67,12 +65,12 @@ public class MemberService {
 		}
 		String userId = request.username();
 
-		GenTokenReq genAccessTokenReq = new GenTokenReq(
+		GenerateTokenReq genAccessTokenReq = new GenerateTokenReq(
 				member.getUsername(),
 				member.getRole()
 		);
 
-		GenTokenReq genRefreshTokenReq = new GenTokenReq(
+		GenerateTokenReq genRefreshTokenReq = new GenerateTokenReq(
 				member.getUsername(),
 				member.getRole()
 		);
@@ -101,7 +99,7 @@ public class MemberService {
 			Member member = memberRepository.findByUsername(userId).orElseThrow(()
 					-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-			GenTokenReq genAccessTokenReq = new GenTokenReq(
+			GenerateTokenReq genAccessTokenReq = new GenerateTokenReq(
 					member.getUsername(),
 					member.getRole()
 			);
