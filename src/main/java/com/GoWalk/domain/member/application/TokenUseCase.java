@@ -1,7 +1,8 @@
 package com.GoWalk.domain.member.application;
 
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
-import com.GoWalk.domain.member.application.data.req.GenerateToken;
+import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
+import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.entity.Member;
 import com.GoWalk.domain.member.application.exception.MemberException;
@@ -25,7 +26,7 @@ public class TokenUseCase {
 	private final RedisConfig redisConfig;
 	private final MemberRepository memberRepository;
 
-	public String generateAccessToken(GenerateToken token, String userId, HttpServletResponse response) {
+	public String generateAccessToken(GenerateTokenReq token, String userId, HttpServletResponse response) {
 		String accessToken = jwtProvider.generateAccessToken(token);
 		redisConfig.redisTemplate().opsForValue().set("accessToken:" + userId, accessToken, 20, TimeUnit.SECONDS);
 
@@ -37,7 +38,7 @@ public class TokenUseCase {
 		return accessToken;
 	}
 
-	public String generateRefreshToken(GenerateToken tokenReq, String userId, HttpServletResponse response) {
+	public String generateRefreshToken(GenerateTokenReq tokenReq, String userId, HttpServletResponse response) {
 		String refreshToken = jwtProvider.generateRefreshToken(tokenReq);
 		redisConfig.redisTemplate().opsForValue().set("refreshToken:" + userId, refreshToken, 7, TimeUnit.DAYS);
 
@@ -70,7 +71,7 @@ public class TokenUseCase {
 		Member member = memberRepository.findByUsername(userId).orElseThrow(()
 				-> new MemberException(AuthStatusCode.INVALID_JWT));
 
-		GenerateToken reGenerateAccessToken = new GenerateToken(
+		GenerateTokenReq reGenerateAccessToken = new GenerateTokenReq(
 				member.getUsername(),
 				member.getRole());
 
