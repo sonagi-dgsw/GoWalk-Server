@@ -17,6 +17,10 @@ public class MemberDetails implements UserDetails {
 		return List.of();
 	}
 
+	public Member getMember() {
+		return member;
+	}
+
 	@Override
 	public String getPassword() {
 		return member.getPassword();

@@ -1,9 +1,9 @@
-package com.GoWalk.domain.member.presentation;
+package com.GoWalk.domain.auth.presentation;
 
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
-import com.GoWalk.domain.member.application.service.MemberService;
-import com.GoWalk.domain.member.application.service.TokenService;
+import com.GoWalk.domain.member.application.MemberUseCase;
+import com.GoWalk.domain.member.application.TokenUseCase;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -16,8 +16,8 @@ import java.util.Map;
 @RequestMapping("api/auth/")
 @CrossOrigin("*")
 public class AuthController {
-	private final MemberService memberService;
-	private final TokenService tokenService;
+	private final MemberUseCase memberService;
+	private final TokenUseCase tokenUseCase;
 
 	// 회원가입
 	@PostMapping("/signup")
@@ -39,7 +39,7 @@ public class AuthController {
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<?> reGenToken(@RequestBody SignUpInReq request, HttpServletResponse response) {
-		return memberService.reGenToken(request, response);
+	public ResponseEntity<?> reGenerateToken(@RequestBody SignUpInReq request, HttpServletResponse response) {
+		return tokenUseCase.reGenerateToken(request, response);
 	}
 }

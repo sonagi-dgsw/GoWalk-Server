@@ -8,6 +8,7 @@ public record SignUpInReq(
 		@NotNull String password,
 		String breed,
 		Integer breed_age,
-		String refreshToken
+		String refreshToken,
+		String accessToken
 ) {
 }

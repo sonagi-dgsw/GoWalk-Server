@@ -10,13 +10,12 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class MemberDetailsService implements UserDetailsService {
+public class MemberDetailService implements UserDetailsService {
 	private final MemberRepository memberRepository;
 
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 		Member member = memberRepository.findByUsername(username).orElseThrow(()
 				-> new UsernameNotFoundException("유저정보를 찾을 수 없습니다."));
-
 		return new MemberDetails(member);
 	}
 }
