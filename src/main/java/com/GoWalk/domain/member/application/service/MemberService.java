@@ -1,7 +1,7 @@
 package com.GoWalk.domain.member.application.service;
 
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
-import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
+import com.GoWalk.domain.member.application.data.req.GenerateToken;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.entity.Member;
@@ -65,12 +65,12 @@ public class MemberService {
 		}
 		String userId = request.username();
 
-		GenerateTokenReq genAccessTokenReq = new GenerateTokenReq(
+		GenerateToken genAccessTokenReq = new GenerateToken(
 				member.getUsername(),
 				member.getRole()
 		);
 
-		GenerateTokenReq genRefreshTokenReq = new GenerateTokenReq(
+		GenerateToken genRefreshTokenReq = new GenerateToken(
 				member.getUsername(),
 				member.getRole()
 		);
@@ -99,7 +99,8 @@ public class MemberService {
 			Member member = memberRepository.findByUsername(userId).orElseThrow(()
 					-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
 
-			GenerateTokenReq genAccessTokenReq = new GenerateTokenReq(
+			GenerateToken genAccessTokenReq = new GenerateToken(
+
 					member.getUsername(),
 					member.getRole()
 			);
