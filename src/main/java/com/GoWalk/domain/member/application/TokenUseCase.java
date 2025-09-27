@@ -2,17 +2,23 @@ package com.GoWalk.domain.member.application;
 
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
 import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
-import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
+import com.GoWalk.domain.member.application.data.req.ReGenerateAccessToken;
+import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.entity.Member;
 import com.GoWalk.domain.member.application.exception.MemberException;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
 import com.GoWalk.global.config.RedisConfig;
+import com.GoWalk.global.data.ApiResponse;
 import com.GoWalk.global.security.JwtProvider;
 import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -21,6 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TokenUseCase {
 	private final JwtProvider jwtProvider;
 	private final RedisConfig redisConfig;
@@ -28,7 +35,7 @@ public class TokenUseCase {
 
 	public String generateAccessToken(GenerateTokenReq token, String userId, HttpServletResponse response) {
 		String accessToken = jwtProvider.generateAccessToken(token);
-		redisConfig.redisTemplate().opsForValue().set("accessToken:" + userId, accessToken, 20, TimeUnit.SECONDS);
+		redisConfig.redisTemplate().opsForValue().set("accessToken:" + userId, accessToken, 1, TimeUnit.HOURS);
 
 		Cookie accessCookie = new Cookie("accessToken", accessToken);
 		accessCookie.setPath("/");
@@ -50,36 +57,53 @@ public class TokenUseCase {
 		return refreshToken;
 	}
 
-	public boolean validateRefreshToken(String userId, String refreshToken) {
-		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();
-		String savedRefreshToken = valueOperations.get("refreshToken:" + userId);
-		return savedRefreshToken != null && savedRefreshToken.equals(refreshToken);
+	// 쿠키에서 리프레시 토큰 추출
+	private String getRefreshTokenFromCookie(HttpServletRequest httpRequest) {
+		if (httpRequest.getCookies() != null) {
+			for (Cookie cookie : httpRequest.getCookies()) {
+				if (cookie.getName().equals("refreshToken")) {
+					String value =  cookie.getValue();
+					if (value != null && !value.isEmpty()) {
+						return value;
+					}
+				}
+			}
+		}
+		throw new MemberException(AuthStatusCode.INVALID_JWT);
 	}
 
-	// 토큰 재발급
-	// 엑세스 토큰이 살아있어도 요청 날리면 재발급 해주긴 함;;
-	public ResponseEntity<?> reGenerateToken(SignUpInReq request, HttpServletResponse response) {
+	public boolean validateRefreshToken(ReGenerateAccessToken request) {
 		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();
 		String userId = request.username();
+		String clientRefreshToken = request.refreshToken();
+
 		String savedRefreshToken = valueOperations.get("refreshToken:" + userId);
 
-
-		if (!this.validateRefreshToken(userId, savedRefreshToken)) {
-			throw new MemberException(AuthStatusCode.INVALID_JWT);
+		if (savedRefreshToken != null && !savedRefreshToken.isEmpty()) {
+			return clientRefreshToken.equals(savedRefreshToken);
 		}
-
-		Member member = memberRepository.findByUsername(userId).orElseThrow(()
-				-> new MemberException(AuthStatusCode.INVALID_JWT));
-
-		GenerateTokenReq reGenerateAccessToken = new GenerateTokenReq(
-				member.getUsername(),
-				member.getRole());
-
-		String newAccessToken = this.generateAccessToken(reGenerateAccessToken, userId, response);
-		return ResponseEntity.ok(Map.of("access_token", newAccessToken));
+		return false;
 	}
 
-	public void deleteTokens(String userId) {
+	public ResponseEntity<?> reGenerateAccessToken(ReGenerateAccessToken request, HttpServletResponse response) {
+		String userId = request.username();
+
+		if (validateRefreshToken(request)) {
+			Member member = memberRepository.findByUsername(userId).orElseThrow(()
+					-> new MemberException(AuthStatusCode.INVALID_JWT));
+
+			GenerateTokenReq reGenerateAccessToken = new GenerateTokenReq(
+					member.getUsername(),
+					member.getRole()
+			);
+			String newAccessToken = this.generateAccessToken(reGenerateAccessToken, userId, response);
+			return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+		}
+		throw new MemberException(AuthStatusCode.INVALID_JWT);
+	}
+
+	public void deleteTokens(SignOutReq request) {
+		String userId = request.username();
 		redisConfig.redisTemplate().delete("accessToken:" + userId);
 		redisConfig.redisTemplate().delete("refreshToken:" + userId);
 	}

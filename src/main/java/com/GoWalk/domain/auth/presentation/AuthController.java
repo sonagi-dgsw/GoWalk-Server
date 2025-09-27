@@ -1,11 +1,16 @@
 package com.GoWalk.domain.auth.presentation;
 
+import com.GoWalk.domain.member.application.data.req.ReGenerateAccessToken;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.MemberUseCase;
 import com.GoWalk.domain.member.application.TokenUseCase;
+import com.GoWalk.domain.member.application.exception.MemberException;
+import com.GoWalk.global.data.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +44,15 @@ public class AuthController {
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<?> reGenerateToken(@RequestBody SignUpInReq request, HttpServletResponse response) {
-		return tokenUseCase.reGenerateToken(request, response);
+	public ResponseEntity<?> reGenerateToken(@RequestBody ReGenerateAccessToken request, HttpServletResponse response) {
+		try {
+			return tokenUseCase.reGenerateAccessToken(request, response);
+		} catch (MemberException e) {
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+					.body(Map.of("error", e.getMessage(), "code", e.getStatusCode()));
+		} catch (Exception e) {
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(Map.of("error", "토큰을 재발급 할 수 없습니다."));
+		}
 	}
 }

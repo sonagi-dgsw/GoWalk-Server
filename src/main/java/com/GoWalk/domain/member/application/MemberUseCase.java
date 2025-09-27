@@ -82,13 +82,12 @@ public class MemberUseCase {
 		// Redis 저장용
 		String accessToken = tokenUseCase.generateAccessToken(genAccessTokenReq, userId, response);
 		String refreshToken = tokenUseCase.generateRefreshToken(genRefreshTokenReq, userId, response);
-		return ResponseEntity.ok(Map.of("access_token", accessToken, "refresh_token", refreshToken));
+		return ResponseEntity.ok(Map.of("accessToken", accessToken, "refreshToken", refreshToken));
 	}
 
 	// 로그아웃
 	public void signOut(SignOutReq request) {
-		String userId = request.username();
-		tokenUseCase.deleteTokens(userId);
+		tokenUseCase.deleteTokens(request);
 	}
 
 	// 비밀번호 검증식

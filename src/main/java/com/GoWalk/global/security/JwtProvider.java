@@ -42,7 +42,7 @@ public class JwtProvider {
 				.builder()
 				.subject(request.username())
 
-				.claim("tokenType", "refresh_token")
+				.claim("tokenType", "refreshToken")
 
 				.issuedAt(now)
 				.expiration(expiration)
@@ -59,7 +59,7 @@ public class JwtProvider {
 				.builder()
 				.subject(request.username())
 
-				.claim("tokenType", "access_token")
+				.claim("tokenType", "accessToken")
 				.claim("role", request.role())
 
 				.issuedAt(now)
@@ -110,7 +110,7 @@ public class JwtProvider {
 			}
 
 			String tokenType = claims.get("tokenType").toString();
-			if (tokenType.equalsIgnoreCase("refresh_token") || tokenType.equalsIgnoreCase("access_token")) {
+			if (tokenType.equalsIgnoreCase("refreshToken") || tokenType.equalsIgnoreCase("accessToken")) {
 				return true;
 			}
 
