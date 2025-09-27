@@ -32,14 +32,12 @@ dependencies {
     implementation 'io.github.cdimascio:dotenv-java:3.0.0'
     implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
+    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
 
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
-    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
-    implementation 'io.jsonwebtoken:jjwt-api:0.12.6'
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.12.6'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.12.6'
@@ -51,9 +49,7 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-    implementation 'io.github.cdimascio:dotenv-java:3.0.0'
-    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.7.0'
-
+    
 }
 
 tasks.named('test') {
