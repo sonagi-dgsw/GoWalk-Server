@@ -1,38 +1,33 @@
-package com.GoWalk.domain.member.application;
+package com.GoWalk.domain.member.application.service;
 
-import com.GoWalk.domain.member.application.data.MockMember;
+import com.GoWalk.domain.auth.exception.AuthStatusCode;
 import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
-import com.GoWalk.domain.member.application.data.res.GetMyInfoRes;
-import com.GoWalk.domain.member.application.data.res.GetMyProfile;
 import com.GoWalk.domain.member.application.entity.Member;
 import com.GoWalk.domain.member.application.entity.Role;
+import com.GoWalk.domain.member.application.exception.MemberException;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
-import jakarta.servlet.http.HttpServletResponse;
+import com.GoWalk.global.config.RedisConfig;
+import com.GoWalk.global.security.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class MemberUseCase {
+public class MemberService {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
-	private final TokenUseCase tokenUseCase;
-
-    public GetMyInfoRes getMyInfo() {
-        return GetMyInfoRes.of(new MockMember("gorani", "legend"));
-  }
-
-    public GetMyProfile getMyProfile() {
-        return GetMyProfile.of(new MockMember("고rani", "legend"));
-  }
+	private final JwtProvider jwtProvider;
+	private final RedisConfig redisConfig;
 
 	// 회원가입
 	public ResponseEntity<?> signUp(SignUpInReq request) {
@@ -52,6 +47,7 @@ public class MemberUseCase {
 				.username(request.username())
 				.email(request.email())
 				.password(passwordEncoder.encode(rawPassword))
+				.email(request.email())
 				.breed(request.breed())
 				.breed_age(request.breed_age())
 				.role(Role.ROLE_USER)
@@ -61,7 +57,7 @@ public class MemberUseCase {
 	}
 
 	// 로그인 + 토큰 발급
-	public ResponseEntity<?> signIn(SignUpInReq request, HttpServletResponse response) {
+	public ResponseEntity<?> signIn(SignUpInReq request) {
 		Member member = memberRepository.findByUsername(request.username()).orElseThrow(()
 				-> new IllegalArgumentException("사용자명 혹은 비밀번호가 잘못되었습니다."));
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
@@ -79,15 +75,46 @@ public class MemberUseCase {
 				member.getRole()
 		);
 
-		// Redis 저장용
-		String accessToken = tokenUseCase.generateAccessToken(genAccessTokenReq, userId, response);
-		String refreshToken = tokenUseCase.generateRefreshToken(genRefreshTokenReq, userId, response);
-		return ResponseEntity.ok(Map.of("accessToken", accessToken, "refreshToken", refreshToken));
+		String accessToken = jwtProvider.generateAccessToken(genAccessTokenReq);
+		String refreshToken = jwtProvider.generateRefreshToken(genRefreshTokenReq);
+
+		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();
+		valueOperations.set("RefreshToken:" + userId , refreshToken, 7, TimeUnit.DAYS);
+		valueOperations.set("AccessToken:" + userId, accessToken, 1, TimeUnit.HOURS);
+		return ResponseEntity.ok(Map.of("access_token", accessToken, "refresh_token", refreshToken));
+	}
+
+	// 토큰 재발급
+	public ResponseEntity<?> reGenToken(SignUpInReq request) {
+		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();
+		String userId = request.username();
+		String refreshToken = request.refreshToken();
+
+		String savedRefreshToken = valueOperations.get("RefreshToken:" +  userId);
+		// 리프레시 토큰 살아있는지 검사
+		if (savedRefreshToken == null || !savedRefreshToken.equals(refreshToken)) {
+			throw new MemberException(AuthStatusCode.INVALID_JWT);
+		}
+		else {
+			Member member = memberRepository.findByUsername(userId).orElseThrow(()
+					-> new IllegalArgumentException("사용자를 찾을 수 없습니다."));
+
+			GenerateTokenReq genAccessTokenReq = new GenerateTokenReq(
+
+					member.getUsername(),
+					member.getRole()
+			);
+			String accessToken = jwtProvider.generateAccessToken(genAccessTokenReq);
+			valueOperations.set("AccessToken: " + userId, accessToken, 1, TimeUnit.HOURS);
+			return ResponseEntity.ok(Map.of("access_token", accessToken));
+		}
 	}
 
 	// 로그아웃
 	public void signOut(SignOutReq request) {
-		tokenUseCase.deleteTokens(request);
+		String userId = request.username();
+		redisConfig.redisTemplate().delete("AccessToken:" + userId);
+		redisConfig.redisTemplate().delete("RefreshToken:" + userId);
 	}
 
 	// 비밀번호 검증식
