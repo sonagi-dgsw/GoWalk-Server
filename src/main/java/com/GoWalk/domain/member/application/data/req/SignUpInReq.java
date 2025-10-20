@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotNull;
 public record SignUpInReq(
 		@NotNull String username,
 		String email,
-		String password,
+		@NotNull String password,
 		String breed,
 		Integer breed_age,
 		String refreshToken,

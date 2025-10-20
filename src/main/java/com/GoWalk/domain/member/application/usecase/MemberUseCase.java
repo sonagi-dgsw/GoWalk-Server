@@ -1,22 +1,21 @@
-package com.GoWalk.domain.member.application;
+package com.GoWalk.domain.member.application.usecase;
 
+import com.GoWalk.domain.auth.exception.AuthException;
+import com.GoWalk.domain.auth.exception.AuthStatusCode;
 import com.GoWalk.domain.member.application.data.MockMember;
 import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
-import com.GoWalk.domain.member.application.data.res.GetMyInfoRes;
-import com.GoWalk.domain.member.application.data.res.GetMyProfile;
+import com.GoWalk.domain.member.application.data.res.*;
 import com.GoWalk.domain.member.application.entity.Member;
 import com.GoWalk.domain.member.application.entity.Role;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
+import com.GoWalk.global.data.ApiResponse;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -35,17 +34,17 @@ public class MemberUseCase {
   }
 
 	// 회원가입
-	public ResponseEntity<?> signUp(SignUpInReq request) {
-
+	public ApiResponse<SignUpRes> signUp(SignUpInReq request) {
 		if (memberRepository.existsByUsername(request.username())) {
-			return ResponseEntity.badRequest().body(Map.of("username_error", "중복된 사용자명입니다."));
+			throw new AuthException(AuthStatusCode.USERNAME_ALREADY_EXIST);
 		}
 		if (memberRepository.existsByEmail(request.email())) {
-			return ResponseEntity.badRequest().body(Map.of("email_error", "해당 이메일로 이미 가입된 계정이 있습니다."));
+			throw new AuthException(AuthStatusCode.EMAIL_ALREADY_EXIST);
 		}
+
 		String rawPassword = request.password();
-		if(!isValidPassword(rawPassword)){
-			return ResponseEntity.badRequest().body(Map.of("password_error", "비밀번호는 8자 이상이며, 영어 대소문자, 숫자, 특수문자를 각각 1개 이상 포함해야 합니다."));
+		if (!isValidPassword(rawPassword)) {
+			throw new AuthException(AuthStatusCode.PASSWORD_IS_WEAK);
 		}
 
 		Member member = Member.builder()
@@ -57,11 +56,11 @@ public class MemberUseCase {
 				.role(Role.ROLE_USER)
 				.build();
 		memberRepository.save(member);
-		return ResponseEntity.ok(member);
+		return ApiResponse.ok(SignUpRes.of(member));
 	}
 
 	// 로그인 + 토큰 발급
-	public ResponseEntity<?> signIn(SignUpInReq request, HttpServletResponse response) {
+	public ApiResponse<SignInRes> signIn(SignUpInReq request, HttpServletResponse response) {
 		Member member = memberRepository.findByUsername(request.username()).orElseThrow(()
 				-> new IllegalArgumentException("사용자명 혹은 비밀번호가 잘못되었습니다."));
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
@@ -79,15 +78,16 @@ public class MemberUseCase {
 				member.getRole()
 		);
 
-		// Redis 저장용
+		// 토큰 생성
 		String accessToken = tokenUseCase.generateAccessToken(genAccessTokenReq, userId, response);
 		String refreshToken = tokenUseCase.generateRefreshToken(genRefreshTokenReq, userId, response);
-		return ResponseEntity.ok(Map.of("accessToken", accessToken, "refreshToken", refreshToken));
+		return ApiResponse.ok(SignInRes.of(accessToken, refreshToken));
 	}
 
 	// 로그아웃
-	public void signOut(SignOutReq request) {
+	public ApiResponse<?> signOut(SignOutReq request) {
 		tokenUseCase.deleteTokens(request);
+		return ApiResponse.ok("로그아웃이 정상적으로 처리되었습니다.");
 	}
 
 	// 비밀번호 검증식

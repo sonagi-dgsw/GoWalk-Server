@@ -1,10 +1,10 @@
-package com.GoWalk.domain.member.application;
+package com.GoWalk.domain.member.application.usecase;
 
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
 import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
 import com.GoWalk.domain.member.application.data.req.ReGenerateAccessToken;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
-import com.GoWalk.domain.member.application.data.req.SignUpInReq;
+import com.GoWalk.domain.member.application.data.res.reGenerateAccessTokenRes;
 import com.GoWalk.domain.member.application.entity.Member;
 import com.GoWalk.domain.member.application.exception.MemberException;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
@@ -16,9 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -85,7 +83,7 @@ public class TokenUseCase {
 		return false;
 	}
 
-	public ResponseEntity<?> reGenerateAccessToken(ReGenerateAccessToken request, HttpServletResponse response) {
+	public ApiResponse<reGenerateAccessTokenRes> reGenerateAccessToken(ReGenerateAccessToken request, HttpServletResponse response) {
 		String userId = request.username();
 
 		if (validateRefreshToken(request)) {
@@ -97,14 +95,22 @@ public class TokenUseCase {
 					member.getRole()
 			);
 			String newAccessToken = this.generateAccessToken(reGenerateAccessToken, userId, response);
-			return ResponseEntity.ok(Map.of("accessToken", newAccessToken));
+			return ApiResponse.ok(reGenerateAccessTokenRes.of(newAccessToken));
 		}
 		throw new MemberException(AuthStatusCode.INVALID_JWT);
 	}
 
 	public void deleteTokens(SignOutReq request) {
+		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();
 		String userId = request.username();
-		redisConfig.redisTemplate().delete("accessToken:" + userId);
-		redisConfig.redisTemplate().delete("refreshToken:" + userId);
+		String savedRefreshToken = valueOperations.get("refreshToken:" + userId);
+		String savedAccessToken = valueOperations.get("accessToken:" + userId);
+
+		if (savedRefreshToken == null || savedAccessToken == null) {
+			throw new MemberException(AuthStatusCode.ALREADY_LOGGED_OUT);
+		} else {
+			redisConfig.redisTemplate().delete("accessToken:" + userId);
+			redisConfig.redisTemplate().delete("refreshToken:" + userId);
+		}
 	}
 }

@@ -1,20 +1,19 @@
 package com.GoWalk.domain.auth.presentation;
 
+import com.GoWalk.domain.auth.exception.AuthStatusCode;
 import com.GoWalk.domain.member.application.data.req.ReGenerateAccessToken;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
-import com.GoWalk.domain.member.application.MemberUseCase;
-import com.GoWalk.domain.member.application.TokenUseCase;
+import com.GoWalk.domain.member.application.data.res.SignInRes;
+import com.GoWalk.domain.member.application.data.res.SignUpRes;
+import com.GoWalk.domain.member.application.data.res.reGenerateAccessTokenRes;
+import com.GoWalk.domain.member.application.usecase.MemberUseCase;
+import com.GoWalk.domain.member.application.usecase.TokenUseCase;
 import com.GoWalk.domain.member.application.exception.MemberException;
 import com.GoWalk.global.data.ApiResponse;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequiredArgsConstructor
@@ -26,33 +25,30 @@ public class AuthController {
 
 	// 회원가입
 	@PostMapping("/signup")
-	public ResponseEntity<?> signUp(@RequestBody SignUpInReq request) {
+	public ApiResponse<SignUpRes> signUp(@RequestBody SignUpInReq request) {
 		return memberService.signUp(request);
 	}
 
 	// 로그인
 	@PostMapping("/signin")
-	public ResponseEntity<?> signIn(@RequestBody SignUpInReq request, HttpServletResponse response) {
+	public ApiResponse<SignInRes> signIn(@RequestBody SignUpInReq request, HttpServletResponse response) {
 		return memberService.signIn(request, response);
 	}
 
 	// 로그아웃
 	@PostMapping("/signout")
-	public ResponseEntity<?> signOut(@RequestBody SignOutReq request) {
-		memberService.signOut(request);
-		return ResponseEntity.ok(Map.of("message", "정상적으로 로그아웃 되었습니다."));
+	public ApiResponse<?> signOut(@RequestBody SignOutReq request) {
+		return memberService.signOut(request);
 	}
 
 	@PostMapping("/refresh")
-	public ResponseEntity<?> reGenerateToken(@RequestBody ReGenerateAccessToken request, HttpServletResponse response) {
+	public ApiResponse<reGenerateAccessTokenRes> reGenerateToken(@RequestBody ReGenerateAccessToken request, HttpServletResponse response) {
 		try {
 			return tokenUseCase.reGenerateAccessToken(request, response);
 		} catch (MemberException e) {
-			return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-					.body(Map.of("error", e.getMessage(), "code", e.getStatusCode()));
+			return ApiResponse.error(AuthStatusCode.INVALID_JWT);
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-					.body(Map.of("error", "토큰을 재발급 할 수 없습니다."));
+			return ApiResponse.error(AuthStatusCode.CANNOT_GENERATE_TOKEN);
 		}
 	}
 }

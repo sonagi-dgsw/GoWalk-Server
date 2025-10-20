@@ -1,6 +1,6 @@
 package com.GoWalk.domain.member.presentation;
 
-import com.GoWalk.domain.member.application.MemberUseCase;
+import com.GoWalk.domain.member.application.usecase.MemberUseCase;
 import com.GoWalk.domain.member.application.data.res.GetMyInfoRes;
 import com.GoWalk.domain.member.application.data.res.GetMyProfile;
 import com.GoWalk.global.data.ApiResponse;

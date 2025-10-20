@@ -1,11 +1,12 @@
 package com.GoWalk.global.data;
 
+import com.GoWalk.global.exception.status_code.StatusCode;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public record ApiResponse<T>(
+public record ApiResponse<T> (
     int status,
     T data,
     ErrorResponse error
@@ -24,6 +25,10 @@ public record ApiResponse<T>(
 
   public static ApiResponse<Void> error(HttpStatus status, ErrorResponse error) {
     return new ApiResponse<>(status.value(), null, error);
+  }
+
+  public static <T> ApiResponse<T> error(StatusCode status) {
+    return new ApiResponse<>(status.getHttpStatus().value(), null, ErrorResponse.of(status.getCode(), status.getMessage()));
   }
 }
 
