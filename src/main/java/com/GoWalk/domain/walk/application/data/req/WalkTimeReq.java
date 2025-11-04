@@ -1,4 +1,4 @@
-package com.GoWalk.domain.walk.application.data.request;
+package com.GoWalk.domain.walk.application.data.req;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

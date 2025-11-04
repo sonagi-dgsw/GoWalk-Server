@@ -1,10 +1,14 @@
 package com.GoWalk.domain.member.application.entity;
 
+import com.GoWalk.domain.walk.application.entity.Walk;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,7 +19,7 @@ import lombok.experimental.SuperBuilder;
 public class Member {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long Id;
+	private Long id;
 
 	private String username; // 사용자명
 
@@ -25,8 +29,13 @@ public class Member {
 
 	private String breed; // 반려동물 견종
 
-	private Integer breed_age; // 반려동물 나이
+	private Integer breedAge; // 반려동물 나이
 
 	@Enumerated(EnumType.STRING)
-	private Role role;
+	private Role role; // 권한
+
+	private Integer rank; // 랭킹(null 허용)
+
+	@OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	private List<Walk> walks = new ArrayList<>();
 }

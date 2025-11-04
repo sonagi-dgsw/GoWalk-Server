@@ -1,4 +1,4 @@
-package com.GoWalk.domain.walk.application.data.response;
+package com.GoWalk.domain.walk.application.data.res;
 
 import java.util.List;
 

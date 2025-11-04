@@ -1,6 +1,6 @@
 package com.GoWalk.domain.walk.application;
 
-import com.GoWalk.domain.walk.application.data.response.WalkRecommendationRes;
+import com.GoWalk.domain.walk.application.data.res.WalkRecommendationRes;
 import com.GoWalk.domain.walk.application.entity.WalkRoute;
 import com.GoWalk.domain.walk.application.repository.WalkRouteRepository;
 import lombok.RequiredArgsConstructor;

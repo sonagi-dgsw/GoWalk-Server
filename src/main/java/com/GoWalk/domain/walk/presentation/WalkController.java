@@ -13,13 +13,13 @@ import com.GoWalk.global.data.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/walk")
 @RequiredArgsConstructor
+@Slf4j
 public class WalkController {
 
     private final WalkRecommendationUseCase walkRecommendationUseCase;
