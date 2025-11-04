@@ -1,37 +1,36 @@
 package com.GoWalk.domain.walk.application;
 
 import com.GoWalk.domain.walk.application.data.response.WalkRecommendationRes;
+import com.GoWalk.domain.walk.application.entity.WalkRoute;
+import com.GoWalk.domain.walk.application.repository.WalkRouteRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Random;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class WalkRecommendationUseCase {
 
+    private final WalkRouteRepository walkRouteRepository;
     private final Random random = new Random();
 
     public WalkRecommendationRes recommend(Long memberId, String mood, double minRating) {
-        List<WalkDummy> dummy = List.of(
-                new WalkDummy("한강공원루트 - 3km", 4.5),
-                new WalkDummy("대형이 이마 반지름 루트 - 4km", 3.2),
-                new WalkDummy("아파트 공원 루트 - 1km", 2.5),
-                new WalkDummy("BlaBlaBla 루트 - 2km", 4.8)
-        );
+        List<WalkRoute> candidates = walkRouteRepository.findByRatingGreaterThanEqual((int) Math.ceil(minRating));
 
-        List<WalkDummy> filtered = dummy.stream()
-                .filter(w -> w.rating() >= minRating)
-                .toList();
-
-        if (filtered.isEmpty()) {
+        if (candidates.isEmpty()) {
             throw new IllegalArgumentException("조건에 맞는 산책로가 없습니다.");
         }
 
-        WalkDummy chosen = filtered.get(random.nextInt(filtered.size()));
-        return new WalkRecommendationRes(mood, chosen.name(), chosen.rating());
-    }
+        // 랜덤추천
+        WalkRoute chosen = candidates.get(random.nextInt(candidates.size()));
 
-    private record WalkDummy(String name, double rating) {}
+        return new WalkRecommendationRes(
+                chosen.getPlaces().stream().map(p -> p.getPlaceName()).toList(),
+                mood,
+                chosen.getRating(),
+                "기분과 평점을 고려해 추천된 코스입니다."
+        );
+    }
 }
