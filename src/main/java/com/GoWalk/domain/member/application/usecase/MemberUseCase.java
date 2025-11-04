@@ -52,7 +52,7 @@ public class MemberUseCase {
 				.email(request.email())
 				.password(passwordEncoder.encode(rawPassword))
 				.breed(request.breed())
-				.breed_age(request.breed_age())
+				.breedAge(request.breedAge())
 				.role(Role.ROLE_USER)
 				.build();
 		memberRepository.save(member);

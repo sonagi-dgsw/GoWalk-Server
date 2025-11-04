@@ -12,15 +12,12 @@ import com.GoWalk.global.config.RedisConfig;
 import com.GoWalk.global.data.ApiResponse;
 import com.GoWalk.global.security.JwtProvider;
 import jakarta.servlet.http.Cookie;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.ValueOperations;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 @Component
@@ -53,21 +50,6 @@ public class TokenUseCase {
 		refreshCookie.setMaxAge(60 * 60 * 24 * 7); // 7일
 		response.addCookie(refreshCookie);
 		return refreshToken;
-	}
-
-	// 쿠키에서 리프레시 토큰 추출
-	private String getRefreshTokenFromCookie(HttpServletRequest httpRequest) {
-		if (httpRequest.getCookies() != null) {
-			for (Cookie cookie : httpRequest.getCookies()) {
-				if (cookie.getName().equals("refreshToken")) {
-					String value =  cookie.getValue();
-					if (value != null && !value.isEmpty()) {
-						return value;
-					}
-				}
-			}
-		}
-		throw new MemberException(AuthStatusCode.INVALID_JWT);
 	}
 
 	public boolean validateRefreshToken(ReGenerateAccessToken request) {
