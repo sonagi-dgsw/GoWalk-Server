@@ -112,6 +112,7 @@ public class MemberUseCase {
 		return hasUpperCase && hasLowerCase && hasDigit && hasSpecial;
 	}
 
+	// 토큰에서 사용자명 추출
 	private Member getMemberFromAccessToken(HttpServletRequest request) {
 		String accessToken = Arrays.stream(Optional.ofNullable(request.getCookies()).orElseThrow(()
 						-> new MemberException(MemberStatusCode.INVALID_JWT)))
