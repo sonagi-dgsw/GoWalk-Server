@@ -1,7 +1,7 @@
 package com.GoWalk.domain.walk.application;
 
-import com.GoWalk.domain.walk.application.data.response.HotPlaceRes;
-import com.GoWalk.domain.walk.application.data.response.WalkRouteRes;
+import com.GoWalk.domain.walk.application.data.res.HotPlaceRes;
+import com.GoWalk.domain.walk.application.data.res.WalkRouteRes;
 import com.GoWalk.domain.walk.application.repository.HotPlaceRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

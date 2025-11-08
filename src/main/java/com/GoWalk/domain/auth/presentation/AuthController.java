@@ -1,7 +1,6 @@
 package com.GoWalk.domain.auth.presentation;
 
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
-import com.GoWalk.domain.member.application.data.req.ReGenerateAccessToken;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.data.res.SignInRes;
@@ -11,6 +10,7 @@ import com.GoWalk.domain.member.application.usecase.MemberUseCase;
 import com.GoWalk.domain.member.application.usecase.TokenUseCase;
 import com.GoWalk.domain.member.application.exception.MemberException;
 import com.GoWalk.global.data.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -41,8 +41,9 @@ public class AuthController {
 		return memberService.signOut(request);
 	}
 
+	// 엑세스 토큰 재 발급
 	@PostMapping("/refresh")
-	public ApiResponse<reGenerateAccessTokenRes> reGenerateToken(@RequestBody ReGenerateAccessToken request, HttpServletResponse response) {
+	public ApiResponse<reGenerateAccessTokenRes> reGenerateToken(HttpServletRequest request, HttpServletResponse response) {
 		try {
 			return tokenUseCase.reGenerateAccessToken(request, response);
 		} catch (MemberException e) {

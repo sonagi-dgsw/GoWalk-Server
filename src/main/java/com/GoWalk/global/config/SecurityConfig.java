@@ -42,6 +42,7 @@ public class SecurityConfig {
 						auth
 								.requestMatchers("/", "/join", "/api/auth/**").permitAll()
 								.requestMatchers("/walk/start", "/walk", "/walk/finished", "/ranking").hasRole("USER")
+								.requestMatchers("/api/members/me").authenticated()
 								.anyRequest().authenticated()
 				)
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);

@@ -36,6 +36,10 @@ public class Member {
 
 	private Integer rank; // 랭킹(null 허용)
 
+	private Integer walkStreak; // 연속 산책 일수
+
+	private Double walkDistance; // 누적 km
+
 	@OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Walk> walks = new ArrayList<>();
 }

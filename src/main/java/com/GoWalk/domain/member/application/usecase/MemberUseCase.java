@@ -2,20 +2,27 @@ package com.GoWalk.domain.member.application.usecase;
 
 import com.GoWalk.domain.auth.exception.AuthException;
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
-import com.GoWalk.domain.member.application.data.MockMember;
 import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.data.res.*;
 import com.GoWalk.domain.member.application.entity.Member;
 import com.GoWalk.domain.member.application.entity.Role;
+import com.GoWalk.domain.member.application.exception.MemberException;
+import com.GoWalk.domain.member.application.exception.MemberStatusCode;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
 import com.GoWalk.global.data.ApiResponse;
+import com.GoWalk.global.security.JwtProvider;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -24,14 +31,17 @@ public class MemberUseCase {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final TokenUseCase tokenUseCase;
+	private final JwtProvider jwtProvider;
 
-    public GetMyInfoRes getMyInfo() {
-        return GetMyInfoRes.of(new MockMember("gorani", "legend"));
-  }
+	public ApiResponse<GetMyInfoRes> getMyInfo(HttpServletRequest request) {
+			Member member = getMemberFromAccessToken(request);
+			return ApiResponse.ok(GetMyInfoRes.of(member));
+	}
 
-    public GetMyProfile getMyProfile() {
-        return GetMyProfile.of(new MockMember("고rani", "legend"));
-  }
+	public ApiResponse<GetMyProfile> getMyProfile(HttpServletRequest request) {
+		Member member = getMemberFromAccessToken(request);
+		return ApiResponse.ok(GetMyProfile.of(member));
+	}
 
 	// 회원가입
 	public ApiResponse<SignUpRes> signUp(SignUpInReq request) {
@@ -100,5 +110,21 @@ public class MemberUseCase {
 		boolean hasDigit = password.matches(".*\\d.*"); // 숫자가 하나라도 있는지 확인
 		boolean hasSpecial = password.matches(".*[!@#$%^&*(),.?\":{}|<>].*"); // 특수문자가 하나라도 있는지 확인
 		return hasUpperCase && hasLowerCase && hasDigit && hasSpecial;
+	}
+
+	private Member getMemberFromAccessToken(HttpServletRequest request) {
+		String accessToken = Arrays.stream(Optional.ofNullable(request.getCookies()).orElseThrow(()
+						-> new MemberException(MemberStatusCode.INVALID_JWT)))
+				.filter(cookie -> "accessToken".equals(cookie.getName()))
+				.map(Cookie::getValue).findFirst().orElseThrow(()
+						-> new MemberException(MemberStatusCode.INVALID_JWT));
+
+		if (!jwtProvider.validateToken(accessToken)) {
+			throw new MemberException(MemberStatusCode.INVALID_JWT);
+		}
+		String userId = jwtProvider.getUsername(accessToken);
+
+		return memberRepository.findByUsername(userId).orElseThrow(()
+				-> new MemberException(MemberStatusCode.MEMBER_CANNOT_FOUND));
 	}
 }
