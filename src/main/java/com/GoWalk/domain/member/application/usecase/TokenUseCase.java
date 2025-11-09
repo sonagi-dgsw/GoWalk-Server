@@ -62,6 +62,9 @@ public class TokenUseCase {
 				.map(Cookie::getValue).findFirst().orElseThrow(()
 				-> new MemberException(MemberStatusCode.INVALID_JWT));
 
+		if (!jwtProvider.validateToken(refreshToken)) {
+			throw new MemberException(MemberStatusCode.INVALID_JWT);
+		}
 		String userId = jwtProvider.getUsername(refreshToken);
 
 		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();
