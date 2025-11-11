@@ -55,6 +55,8 @@ public class WalkUseCase {
 		Walk walk = walkRepository.findById(request.sessionId()).orElseThrow(()
 		-> new WalkException(WalkStatusCode.SESSION_CANNOT_FOUND));
 
+		Member member = walk.getMember();
+
 		if (walkRepository.existsByIdAndStatus(request.sessionId(), WalkStatus.FINISHED)) {
 			throw new WalkException(WalkStatusCode.WALK_ALREADY_FINISHED);
 		}
@@ -63,7 +65,9 @@ public class WalkUseCase {
 		walk.setEndTime(LocalDateTime.now());
 		walk.setDistanceFeedback(request.distanceFeedback());
 		walk.setMoodFeedback(request.moodFeedback());
+		member.setWalkDistance(member.getWalkDistance() + walk.getDistance());
 		walkRepository.save(walk);
+		memberRepository.save(member);
 
 		return ApiResponse.ok(new WalkEndRes());
 	}

@@ -7,6 +7,7 @@ public record SignUpInReq(
 		String email,
 		@NotNull String password,
 		String breed,
-		Integer breedAge
+		Integer breedAge,
+		Double walkDistance
 ) {
 }

@@ -64,6 +64,7 @@ public class MemberUseCase {
 				.breed(request.breed())
 				.breedAge(request.breedAge())
 				.role(Role.ROLE_USER)
+				.walkDistance(0.00)
 				.build();
 		memberRepository.save(member);
 		return ApiResponse.ok(SignUpRes.of(member));
@@ -95,8 +96,8 @@ public class MemberUseCase {
 	}
 
 	// 로그아웃
-	public ApiResponse<?> signOut(SignOutReq request) {
-		tokenUseCase.deleteTokens(request);
+	public ApiResponse<?> signOut(SignOutReq request,  HttpServletResponse response) {
+		tokenUseCase.deleteTokens(request, response);
 		return ApiResponse.ok("로그아웃이 정상적으로 처리되었습니다.");
 	}
 
