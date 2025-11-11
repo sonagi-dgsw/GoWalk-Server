@@ -90,7 +90,7 @@ public class TokenUseCase {
 		throw new MemberException(MemberStatusCode.INVALID_JWT);
 	}
 
-	public void deleteTokens(SignOutReq request) {
+	public void deleteTokens(SignOutReq request, HttpServletResponse response) {
 		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();
 		String userId = request.username();
 		String savedRefreshToken = valueOperations.get("refreshToken:" + userId);
@@ -99,6 +99,21 @@ public class TokenUseCase {
 		if (savedRefreshToken == null || savedAccessToken == null) {
 			throw new MemberException(AuthStatusCode.ALREADY_LOGGED_OUT);
 		} else {
+			// 엑세스 토큰 만료(쿠키)
+			Cookie accessCookie = new Cookie("accessToken", null);
+			accessCookie.setPath("/");
+			accessCookie.setHttpOnly(false);
+			accessCookie.setMaxAge(0); // 즉시 만료
+			response.addCookie(accessCookie);
+
+			// 리프레시 토큰 만료(쿠키)
+			Cookie refreshCookie = new Cookie("refreshToken", null);
+			refreshCookie.setPath("/");
+			refreshCookie.setHttpOnly(true);
+			refreshCookie.setMaxAge(0); // 즉시 만료
+			response.addCookie(refreshCookie);
+
+			// Redis에서 삭제
 			redisConfig.redisTemplate().delete("accessToken:" + userId);
 			redisConfig.redisTemplate().delete("refreshToken:" + userId);
 		}

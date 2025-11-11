@@ -2,9 +2,11 @@ package com.GoWalk.domain.member.application.entity;
 
 import com.GoWalk.domain.walk.application.entity.Walk;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.SuperBuilder;
 
 import java.util.ArrayList;
@@ -34,11 +36,12 @@ public class Member {
 	@Enumerated(EnumType.STRING)
 	private Role role; // 권한
 
-	private Integer rank; // 랭킹(null 허용)
-
+	@Setter
 	private Integer walkStreak; // 연속 산책 일수
 
-	private Double walkDistance; // 누적 km
+	@Setter
+	@NotNull
+	private double walkDistance; // 누적 km
 
 	@OneToMany(mappedBy = "member", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
 	private List<Walk> walks = new ArrayList<>();

@@ -23,6 +23,8 @@ public class Walk {
 
 	private Long trailId; // 산책로 ID
 
+	private Double distance; // 산책 거리
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "member_id")
 	private Member member; // 사용자 ID
