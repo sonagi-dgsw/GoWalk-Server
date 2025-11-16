@@ -40,7 +40,7 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth ->
 						auth
-								.requestMatchers("/", "/join", "/api/auth/**").permitAll()
+								.requestMatchers("/", "/join", "/api/auth/**", "/api/email/**").permitAll()
 								.requestMatchers("/walk/start", "/walk", "/walk/finished", "/ranking").hasRole("USER")
 								.requestMatchers("/api/members/me").authenticated()
 								.anyRequest().authenticated()

@@ -1,14 +1,12 @@
 package com.GoWalk.domain.auth.presentation;
 
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
+import com.GoWalk.domain.member.application.data.req.EmailVerifyReq;
 import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
-import com.GoWalk.domain.member.application.data.res.RankRes;
-import com.GoWalk.domain.member.application.data.res.SignInRes;
-import com.GoWalk.domain.member.application.data.res.SignUpRes;
-import com.GoWalk.domain.member.application.data.res.reGenerateAccessTokenRes;
+import com.GoWalk.domain.member.application.data.res.*;
+import com.GoWalk.domain.member.application.usecase.EmailUseCase;
 import com.GoWalk.domain.member.application.usecase.MemberUseCase;
-import com.GoWalk.domain.member.application.usecase.RankUseCase;
 import com.GoWalk.domain.member.application.usecase.TokenUseCase;
 import com.GoWalk.domain.member.application.exception.MemberException;
 import com.GoWalk.global.data.ApiResponse;
@@ -17,8 +15,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/")
@@ -26,7 +22,7 @@ import java.util.List;
 public class AuthController {
 	private final MemberUseCase memberService;
 	private final TokenUseCase tokenUseCase;
-	private final RankUseCase rankUseCase;
+	private final EmailUseCase emailUseCase;
 
 	// 회원가입
 	@PostMapping("auth/signup")
@@ -46,6 +42,17 @@ public class AuthController {
 		return memberService.signOut(request, response);
 	}
 
+	// 인증이메일 전송
+	@PostMapping("email/send")
+	public void sendEmail(@RequestBody EmailVerifyReq request) {
+		emailUseCase.sendEmail(request.email());
+	}
+
+	@PostMapping("email/verify")
+	public ApiResponse<EmailRes> verifyEmail(@RequestBody EmailVerifyReq request) {
+		return emailUseCase.verifyEmail(request);
+	}
+
 	// 엑세스 토큰 재 발급
 	@PostMapping("auth/refresh")
 	public ApiResponse<reGenerateAccessTokenRes> reGenerateToken(HttpServletRequest request, HttpServletResponse response) {
@@ -56,11 +63,5 @@ public class AuthController {
 		} catch (Exception e) {
 			return ApiResponse.error(AuthStatusCode.CANNOT_GENERATE_TOKEN);
 		}
-	}
-
-	// 랭킹
-	@GetMapping("/rank")
-	public List<RankRes> getRank() {
-		return rankUseCase.getRank();
 	}
 }
