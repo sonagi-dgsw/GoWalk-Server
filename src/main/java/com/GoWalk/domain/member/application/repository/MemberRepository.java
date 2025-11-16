@@ -25,8 +25,7 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
 	boolean existsById(Long id);
 
 	/** 랭킹 관련 **/
-	@Transactional
-	@Modifying
-	@Query("SELECT m.username, m.walkDistance FROM Member m ORDER BY m.walkDistance DESC")
+	@Query("SELECT new com.GoWalk.domain.member.application.data.res.RankRes(m.username, m.walkDistance) " +
+			"FROM Member m ORDER BY m.walkDistance DESC")
 	List<RankRes> findAllOrderByWalkDistanceDesc();
 }
