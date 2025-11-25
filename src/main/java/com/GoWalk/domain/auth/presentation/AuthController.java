@@ -2,7 +2,6 @@ package com.GoWalk.domain.auth.presentation;
 
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
 import com.GoWalk.domain.member.application.data.req.EmailVerifyReq;
-import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.data.res.*;
 import com.GoWalk.domain.member.application.usecase.EmailUseCase;
@@ -38,22 +37,23 @@ public class AuthController {
 
 	// 로그아웃
 	@PostMapping("auth/signout")
-	public ApiResponse<?> signOut(@RequestBody SignOutReq request, HttpServletResponse response) {
-		return memberService.signOut(request, response);
+	public ApiResponse<?> signOut(HttpServletRequest http, HttpServletResponse response) {
+		return memberService.signOut(http, response);
 	}
 
-	// 인증이메일 전송
+	// 인증 이메일 전송
 	@PostMapping("email/send")
 	public void sendEmail(@RequestBody EmailVerifyReq request) {
 		emailUseCase.sendEmail(request.email());
 	}
 
+	// 이메일 인증 확인
 	@PostMapping("email/verify")
 	public ApiResponse<EmailRes> verifyEmail(@RequestBody EmailVerifyReq request) {
 		return emailUseCase.verifyEmail(request);
 	}
 
-	// 엑세스 토큰 재 발급
+	// 엑세스 토큰 재발급
 	@PostMapping("auth/refresh")
 	public ApiResponse<reGenerateAccessTokenRes> reGenerateToken(HttpServletRequest request, HttpServletResponse response) {
 		try {

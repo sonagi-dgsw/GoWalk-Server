@@ -1,7 +1,8 @@
 package com.GoWalk.domain.member.presentation;
 
 import com.GoWalk.domain.member.application.data.res.GetMyProfile;
-import com.GoWalk.domain.member.application.data.res.RankRes;
+import com.GoWalk.domain.member.application.data.res.RankDayRes;
+import com.GoWalk.domain.member.application.data.res.RankDistanceRes;
 import com.GoWalk.domain.member.application.usecase.MemberUseCase;
 import com.GoWalk.domain.member.application.data.res.GetMyInfoRes;
 import com.GoWalk.domain.member.application.usecase.RankUseCase;
@@ -33,9 +34,15 @@ public class MemberController {
     return memberUseCase.getMyProfile(request);
   }
 
-  // 랭킹
-  @GetMapping("/rank")
-  public List<RankRes> getRank() {
-    return rankUseCase.getRank();
+  // 거리로 랭킹
+  @GetMapping("/rank/distance")
+  public List<RankDistanceRes> getRankWithDistance() {
+    return rankUseCase.getRankWithDistance();
+  }
+
+  // 시간으로 랭킹
+  @GetMapping("/rank/time")
+  public List<RankDayRes> getRankWithTime() {
+    return rankUseCase.getRankWithDay();
   }
 }

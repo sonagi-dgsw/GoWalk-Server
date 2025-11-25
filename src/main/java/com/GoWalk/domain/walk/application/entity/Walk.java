@@ -22,7 +22,7 @@ public class Walk {
     private Long id; // 산책 세션 ID
 
 	private Long trailId; // 산책로 ID
-
+	@Setter
 	private Double distance; // 산책 거리
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -37,6 +37,9 @@ public class Walk {
 	@Setter
 	@Enumerated(EnumType.STRING)
 	private WalkStatus status; // 산책 상태(시작, 종료, 중도포기)
+
+	@Setter
+	private double walkDay;
 
 	@Setter
 	private Integer distanceFeedback; // 산책 거리 피드백

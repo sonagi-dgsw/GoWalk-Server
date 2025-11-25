@@ -29,15 +29,19 @@ public class Member {
 
 	private String password; // 비밀번호
 
-	private String breed; // 반려동물 견종
+	private String breed; // 반려견 견종
 
-	private Integer breedAge; // 반려동물 나이
+	private Integer breedAge; // 반려견 나이
+
+	private String petName; // 반려견 이름
+
+	private double petWeight; // 반려견 몸무게
+
+	@Enumerated(EnumType.STRING)
+	private PetGender petGender; // 반려견 성별
 
 	@Enumerated(EnumType.STRING)
 	private Role role; // 권한
-
-	@Setter
-	private Integer walkStreak; // 연속 산책 일수
 
 	@Setter
 	@NotNull
