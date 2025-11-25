@@ -1,6 +1,5 @@
 package com.GoWalk.domain.member.application.usecase;
 
-import com.GoWalk.domain.member.application.data.req.EmailSendReq;
 import com.GoWalk.domain.member.application.data.req.EmailVerifyReq;
 import com.GoWalk.domain.member.application.data.res.EmailRes;
 import com.GoWalk.domain.member.application.exception.MemberException;
@@ -25,15 +24,18 @@ import java.util.concurrent.TimeUnit;
 public class EmailUseCase {
 	private final JavaMailSender mailSender;
 	private final RedisConfig redisConfig;
-	private int authNum;
 
 	@Value("${spring.mail.username}") private String serviceName;
+	// 인증번호 생성
 
-	public void makeRandomNum() {
-		authNum = 100000 + new Random().nextInt(899999); // 6자리 인증번호
+	public int makeRandomNum() {
+		return 100000 + new Random().nextInt(899999); // 6자리 인증번호
 	}
 
+	// 이메일 전송
 	public void sendEmail(String email) {
+		int authNum = makeRandomNum();
+
 		makeRandomNum();
 		String title = "산책가자 회원가입용 본인인증 코드입니다";
 		String message = """
@@ -60,6 +62,7 @@ public class EmailUseCase {
 		valueOperations.set(email, Integer.toString(authNum), 3, TimeUnit.MINUTES);
 	}
 
+	// 이메일 인증 확인
 	public ApiResponse<EmailRes> verifyEmail(EmailVerifyReq request) {
 		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();
 		String code =  valueOperations.get(request.email());

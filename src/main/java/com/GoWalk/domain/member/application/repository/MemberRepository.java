@@ -1,11 +1,9 @@
 package com.GoWalk.domain.member.application.repository;
 
-import com.GoWalk.domain.member.application.data.res.RankRes;
+import com.GoWalk.domain.member.application.data.res.RankDistanceRes;
+import com.GoWalk.domain.member.application.data.res.RankDayRes;
 import com.GoWalk.domain.member.application.entity.Member;
-import io.lettuce.core.dynamic.annotation.Param;
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -25,7 +23,11 @@ public interface MemberRepository extends JpaRepository<Member,Long> {
 	boolean existsById(Long id);
 
 	/** 랭킹 관련 **/
-	@Query("SELECT new com.GoWalk.domain.member.application.data.res.RankRes(m.username, m.walkDistance) " +
-			"FROM Member m ORDER BY m.walkDistance DESC")
-	List<RankRes> findAllOrderByWalkDistanceDesc();
+	@Query("select new com.GoWalk.domain.member.application.data.res.RankDistanceRes(m.username, m.walkDistance)" +
+			"from Member m ORDER BY m.walkDistance desc")
+	List<RankDistanceRes> findAllOrderByWalkDistanceDesc();
+
+	@Query("select new com.GoWalk.domain.member.application.data.res.RankDayRes(w.member.username, sum(w.walkDay))" +
+			"from Walk w group by w.member.username order by sum(w.walkDay) desc")
+	List<RankDayRes> findAllOrderByWalkDayDesc();
 }

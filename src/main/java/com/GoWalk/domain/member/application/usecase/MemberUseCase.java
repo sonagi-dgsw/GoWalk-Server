@@ -3,26 +3,18 @@ package com.GoWalk.domain.member.application.usecase;
 import com.GoWalk.domain.auth.exception.AuthException;
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
 import com.GoWalk.domain.member.application.data.req.GenerateTokenReq;
-import com.GoWalk.domain.member.application.data.req.SignOutReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.data.res.*;
 import com.GoWalk.domain.member.application.entity.Member;
 import com.GoWalk.domain.member.application.entity.Role;
-import com.GoWalk.domain.member.application.exception.MemberException;
-import com.GoWalk.domain.member.application.exception.MemberStatusCode;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
 import com.GoWalk.global.data.ApiResponse;
-import com.GoWalk.global.security.JwtProvider;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.Arrays;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -31,15 +23,14 @@ public class MemberUseCase {
 	private final MemberRepository memberRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final TokenUseCase tokenUseCase;
-	private final JwtProvider jwtProvider;
 
 	public ApiResponse<GetMyInfoRes> getMyInfo(HttpServletRequest request) {
-			Member member = getMemberFromAccessToken(request);
+			Member member = tokenUseCase.getMemberFromAccessToken(request);
 			return ApiResponse.ok(GetMyInfoRes.of(member));
 	}
 
 	public ApiResponse<GetMyProfile> getMyProfile(HttpServletRequest request) {
-		Member member = getMemberFromAccessToken(request);
+		Member member = tokenUseCase.getMemberFromAccessToken(request);
 		return ApiResponse.ok(GetMyProfile.of(member));
 	}
 
@@ -61,8 +52,11 @@ public class MemberUseCase {
 				.username(request.username())
 				.email(request.email())
 				.password(passwordEncoder.encode(rawPassword))
+				.petName(request.petName())
 				.breed(request.breed())
 				.breedAge(request.breedAge())
+				.petWeight(request.petWeight())
+				.petGender(request.petGender())
 				.role(Role.ROLE_USER)
 				.walkDistance(0.00)
 				.build();
@@ -72,32 +66,32 @@ public class MemberUseCase {
 
 	// 로그인 + 토큰 발급
 	public ApiResponse<SignInRes> signIn(SignUpInReq request, HttpServletResponse response) {
-		Member member = memberRepository.findByUsername(request.username()).orElseThrow(()
-				-> new IllegalArgumentException("사용자명 혹은 비밀번호가 잘못되었습니다."));
+		Member member = memberRepository.findByEmail(request.email()).orElseThrow(()
+				-> new IllegalArgumentException("이메일 혹은 비밀번호가 잘못되었습니다."));
 		if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-			throw new IllegalArgumentException("사용자명 혹은 비밀번호가 잘못되었습니다.");
+			throw new IllegalArgumentException("이메일 혹은 비밀번호가 잘못되었습니다.");
 		}
-		String userId = request.username();
+		String email = request.email();
 
 		GenerateTokenReq genAccessTokenReq = new GenerateTokenReq(
-				member.getUsername(),
+				member.getEmail(),
 				member.getRole()
 		);
 
 		GenerateTokenReq genRefreshTokenReq = new GenerateTokenReq(
-				member.getUsername(),
+				member.getEmail(),
 				member.getRole()
 		);
 
 		// 토큰 생성
-		String accessToken = tokenUseCase.generateAccessToken(genAccessTokenReq, userId, response);
-		String refreshToken = tokenUseCase.generateRefreshToken(genRefreshTokenReq, userId, response);
+		String accessToken = tokenUseCase.generateAccessToken(genAccessTokenReq, email, response);
+		String refreshToken = tokenUseCase.generateRefreshToken(genRefreshTokenReq, email, response);
 		return ApiResponse.ok(SignInRes.of(accessToken, refreshToken));
 	}
 
 	// 로그아웃
-	public ApiResponse<?> signOut(SignOutReq request,  HttpServletResponse response) {
-		tokenUseCase.deleteTokens(request, response);
+	public ApiResponse<?> signOut(HttpServletRequest http,  HttpServletResponse response) {
+		tokenUseCase.deleteTokens(http, response);
 		return ApiResponse.ok("로그아웃이 정상적으로 처리되었습니다.");
 	}
 
@@ -111,22 +105,5 @@ public class MemberUseCase {
 		boolean hasDigit = password.matches(".*\\d.*"); // 숫자가 하나라도 있는지 확인
 		boolean hasSpecial = password.matches(".*[!@#$%^&*(),.?\":{}|<>].*"); // 특수문자가 하나라도 있는지 확인
 		return hasUpperCase && hasLowerCase && hasDigit && hasSpecial;
-	}
-
-	// 토큰에서 사용자명 추출
-	private Member getMemberFromAccessToken(HttpServletRequest request) {
-		String accessToken = Arrays.stream(Optional.ofNullable(request.getCookies()).orElseThrow(()
-						-> new MemberException(MemberStatusCode.INVALID_JWT)))
-				.filter(cookie -> "accessToken".equals(cookie.getName()))
-				.map(Cookie::getValue).findFirst().orElseThrow(()
-						-> new MemberException(MemberStatusCode.INVALID_JWT));
-
-		if (!jwtProvider.validateToken(accessToken)) {
-			throw new MemberException(MemberStatusCode.INVALID_JWT);
-		}
-		String userId = jwtProvider.getUsername(accessToken);
-
-		return memberRepository.findByUsername(userId).orElseThrow(()
-				-> new MemberException(MemberStatusCode.MEMBER_CANNOT_FOUND));
 	}
 }

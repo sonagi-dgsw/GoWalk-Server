@@ -1,7 +1,7 @@
 package com.GoWalk.domain.member.application.data.res;
 
-public record RankRes(
+public record RankDayRes(
 		String username,
-		double walkDistance
+		double walkDay
 ) {
 }
