@@ -7,9 +7,9 @@ public record SignUpRes(
 		String username,
 		String email,
 		String breed,
-		Integer breed_age
+		Integer breedAge
 ) {
 	public static SignUpRes of(Member member) {
-		return new SignUpRes(member.getId(), member.getUsername(), member.getEmail(), member.getBreed(), member.getBreed_age());
+		return new SignUpRes(member.getId(), member.getUsername(), member.getEmail(), member.getBreed(), member.getBreedAge());
 	}
 }

@@ -1,6 +1,6 @@
 package com.GoWalk.domain.walk.application.repository;
 
-import com.GoWalk.domain.walk.application.data.response.WalkRouteRes;
+import com.GoWalk.domain.walk.application.data.res.WalkRouteRes;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;

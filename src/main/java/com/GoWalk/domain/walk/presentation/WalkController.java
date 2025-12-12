@@ -1,47 +1,40 @@
 package com.GoWalk.domain.walk.presentation;
 
-import com.GoWalk.domain.walk.application.HotPlaceUseCase;
-import com.GoWalk.domain.walk.application.WalkRecommendationUseCase;
-import com.GoWalk.domain.walk.application.WalkTimeUseCase;
-import com.GoWalk.domain.walk.application.data.request.WalkTimeReq;
-import com.GoWalk.domain.walk.application.data.response.HotPlaceRes;
-import com.GoWalk.domain.walk.application.data.response.WalkRecommendationRes;
-import com.GoWalk.domain.walk.application.data.response.WalkTimeRes;
+import com.GoWalk.domain.member.application.entity.Member;
+import com.GoWalk.domain.walk.application.data.req.WalkEndReq;
+import com.GoWalk.domain.walk.application.data.req.WalkQuitReq;
+import com.GoWalk.domain.walk.application.data.req.WalkStartReq;
+import com.GoWalk.domain.walk.application.data.res.*;
+import com.GoWalk.domain.walk.application.usecase.WalkUseCase;
 import com.GoWalk.global.data.ApiResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/walk")
 @RequiredArgsConstructor
+@Slf4j
 public class WalkController {
+    private final WalkUseCase walkUseCase;
 
-    private final WalkRecommendationUseCase walkRecommendationUseCase;
-    private final WalkTimeUseCase walkTimeUseCase;
-    private final HotPlaceUseCase hotPlaceUseCase;
-
-    @GetMapping("/recommendation")
-    public ApiResponse<WalkRecommendationRes> recommend(
-            @RequestParam(defaultValue = "CALM") String mood,
-            @RequestParam(defaultValue = "0") double minRating
-    ) {
-        return ApiResponse.ok(walkRecommendationUseCase.recommend(1L, mood, minRating));
+    // 산책 시작
+    @PostMapping("/start")
+    public ApiResponse<WalkStartRes> walkStart(@Valid @RequestBody WalkStartReq request, HttpServletRequest http) {
+        return walkUseCase.walkStart(request, http);
     }
 
-    @PostMapping("/time")
-    public ApiResponse<WalkTimeRes> recommendTime(@Valid @RequestBody WalkTimeReq request) {
-        return ApiResponse.ok(walkTimeUseCase.recommendTime(request));
+    // 산책완료
+    @PostMapping("/finish")
+    public ApiResponse<WalkEndRes> walkEnd(@Valid @RequestBody WalkEndReq request, HttpServletRequest http) {
+        return walkUseCase.walkEnd(request, http);
     }
 
-    // ⭐ maxRating 으로 변경
-    @GetMapping("/hotplace")
-    public ApiResponse<List<HotPlaceRes>> getHotPlaces(
-            @RequestParam(defaultValue = "3") int top,
-            @RequestParam(defaultValue = "5") int maxRating
-    ) {
-        return ApiResponse.ok(hotPlaceUseCase.getHotPlaces(top, maxRating));
+    // 산책중도 포기
+    @DeleteMapping("/quit")
+    public ApiResponse<WalkQuitRes> walkQuit(@Valid @RequestBody WalkQuitReq request, HttpServletRequest http) {
+        return walkUseCase.walkQuit(request, http);
     }
 }

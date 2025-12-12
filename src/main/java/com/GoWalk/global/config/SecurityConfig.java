@@ -2,6 +2,9 @@ package com.GoWalk.global.config;
 
 import com.GoWalk.global.security.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.client.OAuth2AuthorizationFailureHandler;
+import org.springframework.security.oauth2.client.OAuth2AuthorizationSuccessHandler;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
 import org.springframework.web.filter.CorsFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,8 +40,9 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 				.authorizeHttpRequests(auth ->
 						auth
-								.requestMatchers("/", "/join", "/api/auth/**").permitAll()
+								.requestMatchers("/", "/join", "/api/auth/**", "/api/email/**").permitAll()
 								.requestMatchers("/walk/start", "/walk", "/walk/finished", "/ranking").hasRole("USER")
+								.requestMatchers("/api/members/me").authenticated()
 								.anyRequest().authenticated()
 				)
 				.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
