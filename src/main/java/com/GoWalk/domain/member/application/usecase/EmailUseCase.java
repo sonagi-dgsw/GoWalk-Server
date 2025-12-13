@@ -15,6 +15,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Objects;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
@@ -37,9 +38,9 @@ public class EmailUseCase {
 		int authNum = makeRandomNum();
 
 		makeRandomNum();
-		String title = "산책가자 회원가입용 본인인증 코드입니다";
+		String title = "산책가자";
 		String message = """
-				<p>안녕하세요, 산책가자 회원가입을 위한 인증 코드입니다.</p>
+				<p>안녕하세요, 산책가자 회원가입용 인증 코드입니다.</p>
 				            <p>인증코드는 다음과 같습니다.</p>
 				            <p><b>{{AUTH_CODE}}</b></p>
 				            <p>이 코드를 입력하여 인증을 완료해주세요.</p>
@@ -49,13 +50,15 @@ public class EmailUseCase {
 		MimeMessage sendMessage = mailSender.createMimeMessage();
 		try {
 			MimeMessageHelper helper = new MimeMessageHelper(sendMessage, true, "utf-8");
-			helper.setFrom(serviceName);
+			helper.setFrom(serviceName, "산책가자");
 			helper.setTo(email);
 			helper.setSubject(title);
 			helper.setText(content, true);
 			mailSender.send(sendMessage);
 		} catch (MessagingException e) {
 			throw new MemberException(MemberStatusCode.MEMBER_CANNOT_FOUND);
+		} catch (UnsupportedEncodingException e) {
+			throw new MemberException(MemberStatusCode.EMAIL_CANNOT_SEND);
 		}
 		// Redis에 5분간 저장
 		ValueOperations<String, String> valueOperations = redisConfig.redisTemplate().opsForValue();

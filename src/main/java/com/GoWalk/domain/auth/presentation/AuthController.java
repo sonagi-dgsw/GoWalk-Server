@@ -1,6 +1,7 @@
 package com.GoWalk.domain.auth.presentation;
 
 import com.GoWalk.domain.auth.exception.AuthStatusCode;
+import com.GoWalk.domain.member.application.data.req.EmailSendReq;
 import com.GoWalk.domain.member.application.data.req.EmailVerifyReq;
 import com.GoWalk.domain.member.application.data.req.SignUpInReq;
 import com.GoWalk.domain.member.application.data.res.*;
@@ -11,6 +12,7 @@ import com.GoWalk.domain.member.application.exception.MemberException;
 import com.GoWalk.global.data.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -43,7 +45,7 @@ public class AuthController {
 
 	// 인증 이메일 전송
 	@PostMapping("email/send")
-	public void sendEmail(@RequestBody EmailVerifyReq request) {
+	public void sendEmail(@Valid @RequestBody EmailSendReq request) {
 		emailUseCase.sendEmail(request.email());
 	}
 
