@@ -56,7 +56,7 @@ public class TokenUseCase {
 
 		Cookie refreshCookie = new Cookie("refreshToken", refreshToken);
 		refreshCookie.setPath("/");
-		refreshCookie.setHttpOnly(false); // 임시로 false입니다.
+		refreshCookie.setHttpOnly(true);
 		refreshCookie.setMaxAge(60 * 60 * 24 * 7); // 7일
 		response.addCookie(refreshCookie);
 		return refreshToken;

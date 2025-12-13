@@ -8,6 +8,7 @@ import com.GoWalk.domain.member.application.data.res.*;
 import com.GoWalk.domain.member.application.entity.Member;
 import com.GoWalk.domain.member.application.entity.Role;
 import com.GoWalk.domain.member.application.repository.MemberRepository;
+import com.GoWalk.domain.walk.application.entity.Walk;
 import com.GoWalk.global.data.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,7 +32,8 @@ public class MemberUseCase {
 
 	public ApiResponse<GetMyProfile> getMyProfile(HttpServletRequest request) {
 		Member member = tokenUseCase.getMemberFromAccessToken(request);
-		return ApiResponse.ok(GetMyProfile.of(member));
+		double walkDay =  member.getWalks().stream().map(Walk::getWalkDay).mapToDouble(Double::doubleValue).sum();;
+		return ApiResponse.ok(GetMyProfile.of(member, walkDay));
 	}
 
 	// 회원가입

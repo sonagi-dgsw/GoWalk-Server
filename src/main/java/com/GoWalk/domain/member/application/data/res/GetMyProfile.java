@@ -4,10 +4,11 @@ import com.GoWalk.domain.member.application.entity.Member;
 import jakarta.validation.constraints.NotNull;
 
 public record GetMyProfile(
-    @NotNull String username,
-    @NotNull Double walkDistance
+    String username,
+    Double walkDistance,
+    Double walkDay
 ) {
-  public static GetMyProfile of(Member member) {
-    return new GetMyProfile(member.getUsername(), member.getWalkDistance());
+  public static GetMyProfile of(Member member, double walkDay) {
+    return new GetMyProfile(member.getUsername(), member.getWalkDistance(), walkDay);
   }
 }
