@@ -16,7 +16,7 @@ import com.GoWalk.domain.walk.application.data.response.WalkRouteRes;
 import com.GoWalk.domain.walk.application.client.WalkAiClient;
 import com.GoWalk.domain.walk.application.data.req.WalkEndReq;
 import com.GoWalk.domain.walk.application.data.req.WalkQuitReq;
-import com.GoWalk.domain.walk.application.data.request.WalkAiRouteReq;
+import com.GoWalk.domain.walk.application.data.req.WalkAiRouteReq;
 import com.GoWalk.domain.walk.application.data.response.*;
 import com.GoWalk.domain.walk.application.usecase.WalkUseCase;
 import com.GoWalk.domain.walk.application.data.req.WalkStartReq;

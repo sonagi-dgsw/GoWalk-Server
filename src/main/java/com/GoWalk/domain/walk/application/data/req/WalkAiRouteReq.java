@@ -1,4 +1,4 @@
-package com.GoWalk.domain.walk.application.data.request;
+package com.GoWalk.domain.walk.application.data.req;
 
 import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;

@@ -1,6 +1,6 @@
 package com.GoWalk.domain.walk.application.client;
 
-import com.GoWalk.domain.walk.application.data.request.WalkAiRouteReq;
+import com.GoWalk.domain.walk.application.data.req.WalkAiRouteReq;
 import com.GoWalk.domain.walk.application.data.response.WalkAiRouteRes;
 import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
