@@ -1,7 +1,7 @@
 package com.GoWalk.domain.walk.application;
 
-import com.GoWalk.domain.walk.application.data.request.WalkTimeReq;
-import com.GoWalk.domain.walk.application.data.response.WalkTimeRes;
+import com.GoWalk.domain.walk.application.data.req.WalkTimeReq;
+import com.GoWalk.domain.walk.application.data.res.WalkTimeRes;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;

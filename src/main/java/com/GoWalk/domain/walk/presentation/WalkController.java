@@ -4,18 +4,22 @@ import com.GoWalk.domain.walk.application.HotPlaceUseCase;
 import com.GoWalk.domain.walk.application.WalkRecommendationUseCase;
 import com.GoWalk.domain.walk.application.WalkRouteUseCase;
 import com.GoWalk.domain.walk.application.WalkTimeUseCase;
-import com.GoWalk.domain.walk.application.client.WalkAiClient;
-import com.GoWalk.domain.walk.application.data.req.WalkEndReq;
-import com.GoWalk.domain.walk.application.data.req.WalkQuitReq;
 import com.GoWalk.domain.walk.application.data.req.WalkTimeReq;
 import com.GoWalk.domain.walk.application.data.request.CreateWalkRouteReq;
-import com.GoWalk.domain.walk.application.data.request.WalkAiRouteReq;
 import com.GoWalk.domain.walk.application.data.res.WalkEndRes;
 import com.GoWalk.domain.walk.application.data.res.WalkQuitRes;
 import com.GoWalk.domain.walk.application.data.res.WalkRecommendationRes;
+import com.GoWalk.domain.walk.application.data.res.WalkStartRes;
 import com.GoWalk.domain.walk.application.data.res.WalkTimeRes;
+import com.GoWalk.domain.walk.application.data.response.HotPlaceRes;
+import com.GoWalk.domain.walk.application.data.response.WalkRouteRes;
+import com.GoWalk.domain.walk.application.client.WalkAiClient;
+import com.GoWalk.domain.walk.application.data.req.WalkEndReq;
+import com.GoWalk.domain.walk.application.data.req.WalkQuitReq;
+import com.GoWalk.domain.walk.application.data.request.WalkAiRouteReq;
 import com.GoWalk.domain.walk.application.data.response.*;
 import com.GoWalk.domain.walk.application.usecase.WalkUseCase;
+import com.GoWalk.domain.walk.application.data.req.WalkStartReq;
 import com.GoWalk.global.data.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -45,6 +49,12 @@ public class WalkController {
             @RequestParam(defaultValue = "0") double minRating
     ) {
         return ApiResponse.ok(walkRecommendationUseCase.recommend(1L, mood, minRating));
+    };
+
+    // 산책 시작
+    @PostMapping("/start")
+    public ApiResponse<WalkStartRes> walkStart(@Valid @RequestBody WalkStartReq request, HttpServletRequest http) {
+        return walkUseCase.walkStart(request, http);
     }
 
     @PostMapping("/time")
