@@ -4,12 +4,11 @@ import com.GoWalk.domain.walk.application.HotPlaceUseCase;
 import com.GoWalk.domain.walk.application.WalkRecommendationUseCase;
 import com.GoWalk.domain.walk.application.WalkRouteUseCase;
 import com.GoWalk.domain.walk.application.WalkTimeUseCase;
+import com.GoWalk.domain.walk.application.client.WalkAiClient;
 import com.GoWalk.domain.walk.application.data.request.CreateWalkRouteReq;
+import com.GoWalk.domain.walk.application.data.request.WalkAiRouteReq;
 import com.GoWalk.domain.walk.application.data.request.WalkTimeReq;
-import com.GoWalk.domain.walk.application.data.response.HotPlaceRes;
-import com.GoWalk.domain.walk.application.data.response.WalkRecommendationRes;
-import com.GoWalk.domain.walk.application.data.response.WalkRouteRes;
-import com.GoWalk.domain.walk.application.data.response.WalkTimeRes;
+import com.GoWalk.domain.walk.application.data.response.*;
 import com.GoWalk.global.data.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +27,8 @@ public class WalkController {
     private final HotPlaceUseCase hotPlaceUseCase;
     private final WalkRouteUseCase walkRouteUseCase;
 
+    private final WalkAiClient walkAiClient;
+
     @GetMapping("/recommendation")
     public ApiResponse<WalkRecommendationRes> recommend(
             @RequestParam(defaultValue = "CALM") String mood,
@@ -41,7 +42,6 @@ public class WalkController {
         return ApiResponse.ok(walkTimeUseCase.recommendTime(request));
     }
 
-    // maxRating 사용
     @GetMapping("/hotplace")
     public ApiResponse<List<HotPlaceRes>> getHotPlaces(
             @RequestParam(defaultValue = "3") int top,
@@ -59,6 +59,12 @@ public class WalkController {
         String userId = (currentUserId != null && !currentUserId.isBlank())
                 ? currentUserId
                 : (fallbackUserId != null ? fallbackUserId : "anonymous");
+
         return ApiResponse.ok(walkRouteUseCase.createRoute(req, userId));
+    }
+
+    @PostMapping("/ai-route")
+    public ApiResponse<WalkAiRouteRes> aiRoute(@Valid @RequestBody WalkAiRouteReq req) {
+        return ApiResponse.ok(walkAiClient.recommendRoute(req));
     }
 }

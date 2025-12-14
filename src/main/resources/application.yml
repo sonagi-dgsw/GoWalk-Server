@@ -14,11 +14,17 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
   data:
     redis:
       host: localhost
       port: 6379
-      
+
+ai:
+  walk:
+    base-url: http://ai-server:8000
+    route-path: /route/recommend
+
 springdoc:
   api-docs:
     path: /api-docs
