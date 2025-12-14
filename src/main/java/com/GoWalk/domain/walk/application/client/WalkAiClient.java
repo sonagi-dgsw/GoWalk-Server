@@ -2,23 +2,21 @@ package com.GoWalk.domain.walk.application.client;
 
 import com.GoWalk.domain.walk.application.data.request.WalkAiRouteReq;
 import com.GoWalk.domain.walk.application.data.response.WalkAiRouteRes;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import jakarta.annotation.PostConstruct;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class WalkAiClient {
 
-    @Qualifier("walkAiRestTemplate")
+    @Resource(name = "walkAiRestTemplate")
     private final RestTemplate restTemplate;
 
     @Value("${ai.walk.base-url}")
